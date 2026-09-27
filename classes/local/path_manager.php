@@ -68,13 +68,12 @@ class path_manager {
      */
     public static function get_course_ids(int $pathid): array {
         global $DB;
-        return array_map('intval', $DB->get_fieldset_select(
-            self::COURSES_TABLE,
-            'courseid',
-            'pathid = :pathid',
-            ['pathid' => $pathid],
-            'sortorder ASC, id ASC'
-        ));
+        // Explicit ORDER BY: get_fieldset_select() cannot sort and databases return rows in different orders.
+        $sql = "SELECT courseid
+                  FROM {" . self::COURSES_TABLE . "}
+                 WHERE pathid = :pathid
+              ORDER BY sortorder ASC, id ASC";
+        return array_map('intval', $DB->get_fieldset_sql($sql, ['pathid' => $pathid]));
     }
 
     /**
