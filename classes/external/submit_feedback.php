@@ -17,7 +17,6 @@
 namespace block_aicourserecommender\external;
 
 use block_aicourserecommender\local\feedback_manager;
-use block_aicourserecommender\local\path_manager;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
@@ -55,25 +54,14 @@ class submit_feedback extends external_api {
      * @return array
      */
     public static function execute(string $itemtype, int $itemid, int $rating, string $reason = ''): array {
-        global $DB, $USER;
+        global $USER;
         $params = self::validate_parameters(
             self::execute_parameters(),
             ['itemtype' => $itemtype, 'itemid' => $itemid, 'rating' => $rating, 'reason' => $reason]
         );
         $context = helper::require_user();
         self::validate_context($context);
-
-        if ($params['itemtype'] === 'course') {
-            if (!$DB->record_exists('course', ['id' => $params['itemid']])) {
-                throw new \invalid_parameter_exception('Unknown course');
-            }
-        } else if ($params['itemtype'] === 'path') {
-            if (!path_manager::get_path($params['itemid'])) {
-                throw new \invalid_parameter_exception('Unknown path');
-            }
-        } else {
-            throw new \invalid_parameter_exception('Invalid item type');
-        }
+        helper::require_ranked_item((int) $USER->id, $params['itemtype'], $params['itemid']);
         $rating = $params['rating'] >= 0 ? 1 : -1;
         feedback_manager::save((int) $USER->id, $params['itemtype'], $params['itemid'], $rating, $params['reason']);
         return ['success' => true, 'rating' => $rating];

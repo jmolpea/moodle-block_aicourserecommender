@@ -63,6 +63,7 @@ class generate_path_image extends external_api {
 
         $empty = ['success' => false, 'drafturl' => '', 'draftitemid' => 0, 'filename' => ''];
         $client = \core\di::get(ai_client::class);
+        helper::require_ai_policy($client);
         if (!$client->is_image_available()) {
             return $empty + ['error' => get_string('errornoimageai', 'block_aicourserecommender')];
         }

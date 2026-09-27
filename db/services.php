@@ -30,6 +30,8 @@ $functions = [
         'description' => 'Returns the first page of AI course and learning path recommendations of the current user.',
         'type' => 'read',
         'ajax' => true,
+        // The AI call can take several seconds: do not block other requests of the user.
+        'readonlysession' => true,
         'capabilities' => 'block/aicourserecommender:use',
     ],
     'block_aicourserecommender_get_more' => [
@@ -37,6 +39,8 @@ $functions = [
         'description' => 'Returns the next page of the stored ranking without calling the AI.',
         'type' => 'read',
         'ajax' => true,
+        // The AI call can take several seconds: do not block other requests of the user.
+        'readonlysession' => true,
         'capabilities' => 'block/aicourserecommender:use',
     ],
     'block_aicourserecommender_save_answers' => [
@@ -49,6 +53,13 @@ $functions = [
     'block_aicourserecommender_save_consent' => [
         'classname' => \block_aicourserecommender\external\save_consent::class,
         'description' => 'Records that the current user accepted the privacy notice.',
+        'type' => 'write',
+        'ajax' => true,
+        'capabilities' => 'block/aicourserecommender:use',
+    ],
+    'block_aicourserecommender_delete_my_data' => [
+        'classname' => \block_aicourserecommender\external\delete_my_data::class,
+        'description' => 'Deletes the answers, consent, rankings, ratings and activity of the current user.',
         'type' => 'write',
         'ajax' => true,
         'capabilities' => 'block/aicourserecommender:use',

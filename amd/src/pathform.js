@@ -26,6 +26,7 @@ import * as Repository from './repository';
 import ModalSaveCancel from 'core/modal_save_cancel';
 import ModalEvents from 'core/modal_events';
 import Notification from 'core/notification';
+import Policy from 'core_ai/policy';
 import {getString, getStrings} from 'core/str';
 
 /**
@@ -137,6 +138,26 @@ const preview = async(title, body, applylabel) => {
 };
 
 /**
+ * Shows the AI usage policy of the site and records the acceptance with the core flow.
+ *
+ * @returns {Promise<Boolean>} Whether the policy was accepted.
+ */
+const acceptPolicy = async() => {
+    const [title, body, label] = await getStrings([
+        {key: 'aiusagepolicy', component: 'core_ai'},
+        {key: 'userpolicy', component: 'core_ai'},
+        {key: 'acceptai', component: 'core_ai'},
+    ]);
+    try {
+        await Notification.saveCancelPromise(title, body, label);
+    } catch (cancelled) {
+        return false;
+    }
+    await Policy.acceptPolicy();
+    return true;
+};
+
+/**
  * Initialises the form.
  */
 export const init = async() => {
@@ -240,6 +261,13 @@ export const init = async() => {
             }
         } catch (error) {
             status.textContent = '';
+            if (error.errorcode === 'erroraipolicy') {
+                button.disabled = false;
+                if (await acceptPolicy()) {
+                    button.click();
+                }
+                return;
+            }
             Notification.exception(error);
         } finally {
             button.disabled = false;

@@ -35,6 +35,15 @@ $tasks = [
         'dayofweek' => '*',
     ],
     [
+        'classname' => 'block_aicourserecommender\task\cleanup',
+        'blocking' => 0,
+        'minute' => 'R',
+        'hour' => '4',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+    [
         'classname' => 'block_aicourserecommender\task\notify_new_courses',
         'blocking' => 0,
         'minute' => 'R',

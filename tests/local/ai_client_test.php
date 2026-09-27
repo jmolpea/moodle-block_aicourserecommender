@@ -73,7 +73,13 @@ final class ai_client_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();
-        $response = new response_generate_text(success: false, errorcode: 429, errormessage: 'Rate limited');
+        $args = ['success' => false, 'errorcode' => 429, 'errormessage' => 'Rate limited'];
+        // Moodle 5.0+ also requires the error name.
+        $params = (new \ReflectionMethod(response_generate_text::class, '__construct'))->getParameters();
+        if (in_array('error', array_map(static fn($p) => $p->getName(), $params), true)) {
+            $args['error'] = 'Too many requests';
+        }
+        $response = new response_generate_text(...$args);
         $this->mock_manager($response);
 
         $result = (new ai_client())->generate_text('PROMPT', (int) $user->id, ai_client::CALL_SUMMARY);

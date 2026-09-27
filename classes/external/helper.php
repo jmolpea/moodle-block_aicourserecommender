@@ -17,6 +17,7 @@
 namespace block_aicourserecommender\external;
 
 use block_aicourserecommender\local\answers_manager;
+use block_aicourserecommender\local\ranking_manager;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
@@ -49,6 +50,37 @@ class helper {
     }
 
     /**
+     * Checks that an item was recommended to the user. Ratings, clicks and enrolments from recommendations are only
+     * accepted for items of the stored ranking, so they cannot be forged for arbitrary courses or paths.
+     *
+     * @param int $userid User id.
+     * @param string $itemtype "course" or "path".
+     * @param int $itemid Item id.
+     * @return void
+     */
+    public static function require_ranked_item(int $userid, string $itemtype, int $itemid): void {
+        if (!in_array($itemtype, ['course', 'path'], true)) {
+            throw new \invalid_parameter_exception('Invalid item type');
+        }
+        if (!ranking_manager::is_ranked($userid, $itemtype, $itemid)) {
+            throw new \invalid_parameter_exception('The item was not recommended to this user');
+        }
+    }
+
+    /**
+     * Checks that the current user accepted the AI usage policy of the site.
+     *
+     * @param \block_aicourserecommender\local\ai_client $client AI client.
+     * @return void
+     */
+    public static function require_ai_policy(\block_aicourserecommender\local\ai_client $client): void {
+        global $USER;
+        if (!$client->has_accepted_policy((int) $USER->id)) {
+            throw new \moodle_exception('erroraipolicy', 'block_aicourserecommender');
+        }
+    }
+
+    /**
      * Structure of a course card.
      *
      * @return external_single_structure
@@ -59,6 +91,7 @@ class helper {
             'id' => new external_value(PARAM_INT, 'Course id'),
             'position' => new external_value(PARAM_INT, 'Position in the ranking, starting at 1'),
             'name' => new external_value(PARAM_RAW, 'Formatted course name'),
+            'plainname' => new external_value(PARAM_TEXT, 'Course name as plain text'),
             'category' => new external_value(PARAM_RAW, 'Formatted category name'),
             'image' => new external_value(PARAM_RAW, 'Course image URL'),
             'startdate' => new external_value(PARAM_RAW, 'Formatted start date, empty if none'),

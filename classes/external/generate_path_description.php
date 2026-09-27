@@ -63,17 +63,20 @@ class generate_path_description extends external_api {
         $context = \context_system::instance();
         self::validate_context($context);
         require_capability('block/aicourserecommender:managepaths', $context);
+        $client = \core\di::get(ai_client::class);
+        helper::require_ai_policy($client);
 
-        $courseids = array_values(array_filter(array_map('intval', $courseids)));
+        $courseids = array_values(array_unique(array_filter(array_map('intval', $courseids))));
         if (!$courseids) {
             return ['success' => false, 'description' => '', 'error' => get_string('errornocourses', 'block_aicourserecommender')];
         }
         [$insql, $params] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
-        $names = $DB->get_records_select_menu('course', "id $insql", $params, '', 'id, fullname');
+        $records = $DB->get_records_select('course', "id $insql", $params, '', 'id, category, fullname, visible');
         $summaries = summary_manager::get_summaries($courseids);
         $courses = [];
         foreach ($courseids as $courseid) {
-            if (!isset($names[$courseid])) {
+            // Only courses the manager can see: never leak hidden course data into a prompt.
+            if (!isset($records[$courseid]) || !\core_course_category::can_view_course_info($records[$courseid])) {
                 continue;
             }
             $coursecontext = \context_course::instance($courseid);
@@ -85,7 +88,13 @@ class generate_path_description extends external_api {
                     $coursecontext
                 );
             }
-            $courses[] = ['name' => profile_collector::clean($names[$courseid], 255, $coursecontext), 'summary' => $summary];
+            $courses[] = [
+                'name' => profile_collector::clean($records[$courseid]->fullname, 255, $coursecontext),
+                'summary' => $summary,
+            ];
+        }
+        if (!$courses) {
+            return ['success' => false, 'description' => '', 'error' => get_string('errornocourses', 'block_aicourserecommender')];
         }
 
         $languages = self::get_languages();
@@ -94,7 +103,6 @@ class generate_path_description extends external_api {
             $courses,
             $languages
         );
-        $client = \core\di::get(ai_client::class);
         $result = $client->generate_text($prompt, (int) $USER->id, ai_client::CALL_DESCRIPTION);
         if (!$result['success']) {
             return ['success' => false, 'description' => '', 'error' => get_string('erroraifailed', 'block_aicourserecommender')];

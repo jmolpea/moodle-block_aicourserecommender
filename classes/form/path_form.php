@@ -48,7 +48,8 @@ class path_form extends \moodleform {
         return [
             'maxfiles' => 1,
             'subdirs' => 0,
-            'accepted_types' => ['web_image'],
+            // Raster images only: SVG can contain scripts.
+            'accepted_types' => ['.jpg', '.jpeg', '.png', '.gif', '.webp'],
             'maxbytes' => 0,
         ];
     }

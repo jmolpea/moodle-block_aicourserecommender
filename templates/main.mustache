@@ -30,6 +30,7 @@
     * maxlength - Maximum answer length
     * speechlang - BCP 47 language for dictation
     * catalogurl - Course catalogue URL
+    * requireconsent - Whether consent is required
 
     Example context (json):
     {
@@ -47,13 +48,15 @@
         ],
         "maxlength": 1000,
         "speechlang": "en",
-        "catalogurl": "https://example.com/course/index.php"
+        "catalogurl": "https://example.com/course/index.php",
+        "requireconsent": true
     }
 }}
 <div class="block-aicourserecommender" id="{{uniqid}}" data-region="aicr-root" data-state="{{state}}"
     data-policyaccepted="{{#policyaccepted}}1{{/policyaccepted}}{{^policyaccepted}}0{{/policyaccepted}}"
     data-hasanswers="{{#hasanswers}}1{{/hasanswers}}{{^hasanswers}}0{{/hasanswers}}"
-    data-speechlang="{{speechlang}}">
+    data-speechlang="{{speechlang}}"
+    data-requireconsent="{{#requireconsent}}1{{/requireconsent}}{{^requireconsent}}0{{/requireconsent}}">
     <div class="sr-only visually-hidden" aria-live="polite" aria-atomic="true" data-region="live"></div>
 
     <section data-region="consent" aria-labelledby="{{uniqid}}-consent-title" {{^isconsent}}hidden{{/isconsent}}>
@@ -121,6 +124,9 @@
                 </button>
                 <button type="button" class="btn btn-link" data-action="cancel-edit" {{^hasanswers}}hidden{{/hasanswers}}>
                     {{#str}} cancel {{/str}}
+                </button>
+                <button type="button" class="btn btn-link" data-action="delete-data" {{^hasanswers}}hidden{{/hasanswers}}>
+                    {{#str}} deletemydata, block_aicourserecommender {{/str}}
                 </button>
             </div>
         </form>

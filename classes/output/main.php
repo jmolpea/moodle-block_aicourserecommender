@@ -118,6 +118,7 @@ class main implements renderable, templatable {
             'maxlength' => questions::MAX_ANSWER_LENGTH,
             'speechlang' => str_replace('_', '-', current_language()),
             'catalogurl' => (new \moodle_url('/course/index.php'))->out(false),
+            'requireconsent' => (bool) config::get_int('requireconsent'),
         ];
     }
 }

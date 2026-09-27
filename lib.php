@@ -47,6 +47,10 @@ function block_aicourserecommender_pluginfile(
         return false;
     }
     require_login();
+    $caps = ['block/aicourserecommender:use', 'block/aicourserecommender:managepaths'];
+    if (isguestuser() || !has_any_capability($caps, $context)) {
+        return false;
+    }
     $pathid = (int) array_shift($args);
     $path = \block_aicourserecommender\local\path_manager::get_path($pathid);
     if (!$path || (!$path->visible && !has_capability('block/aicourserecommender:managepaths', $context))) {
@@ -57,6 +61,11 @@ function block_aicourserecommender_pluginfile(
     $file = get_file_storage()->get_file($context->id, 'block_aicourserecommender', $filearea, $pathid, $filepath, $filename);
     if (!$file || $file->is_directory()) {
         return false;
+    }
+    // Only raster images are shown inline; anything else is downloaded, never rendered by the browser.
+    $raster = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!in_array($file->get_mimetype(), $raster, true)) {
+        $forcedownload = true;
     }
     send_stored_file($file, DAYSECS, 0, $forcedownload, $options);
 }

@@ -67,6 +67,7 @@ class card_exporter {
                 'id' => (int) $course->id,
                 'position' => $position,
                 'name' => format_string($course->fullname, true, ['context' => $context]),
+                'plainname' => format_string($course->fullname, true, ['context' => $context, 'escape' => false]),
                 'category' => $category ? $category->get_formatted_name() : '',
                 'image' => $image ?: $OUTPUT->get_generated_image_for_id($course->id),
                 'startdate' => $course->startdate ? userdate($course->startdate, $dateformat) : '',

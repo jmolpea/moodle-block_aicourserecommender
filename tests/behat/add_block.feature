@@ -7,6 +7,9 @@ Feature: Add the AI course recommender block
   Background:
     Given the following config values are set as admin:
       | behatfakeai | 1 | block_aicourserecommender |
+    # Moodle 5.2+ only shows the site home to logged-in users when it is enabled.
+    And the following config values are set as admin:
+      | enablemyhome | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | One      | teacher1@example.com |
@@ -20,7 +23,7 @@ Feature: Add the AI course recommender block
   @javascript
   Scenario: Add the block to the front page and the Dashboard
     Given I log in as "admin"
-    And I am on site homepage
+    And I visit "/index.php?redirect=0"
     And I turn editing mode on
     When I add the "AI course recommender" block
     Then I should see "AI course recommender"
@@ -28,16 +31,15 @@ Feature: Add the AI course recommender block
     And I add the "AI course recommender" block
     And I should see "AI course recommender"
 
-  @javascript
   Scenario: The block cannot be added to a course
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    When I click on "Add a block" "link"
+    When I follow "Add a block"
     Then I should not see "AI course recommender"
 
   Scenario: Guests do not see the block
     Given the following "blocks" exist:
       | blockname           | contextlevel | reference | pagetypepattern | defaultregion |
       | aicourserecommender | System       | 1         | site-index      | side-pre      |
-    When I am on site homepage
+    When I visit "/index.php?redirect=0"
     Then I should not see "AI course recommender"

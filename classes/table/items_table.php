@@ -28,6 +28,8 @@ require_once($CFG->libdir . '/tablelib.php');
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class items_table extends \table_sql {
+    use spreadsheet_safe;
+
     /** @var string course or path. */
     protected string $itemtype;
 
@@ -115,6 +117,9 @@ class items_table extends \table_sql {
             $name = format_string($row->name, true, ['context' => \context_system::instance()]);
             $url = new \moodle_url('/blocks/aicourserecommender/path.php', ['id' => $row->id]);
         }
-        return $this->is_downloading() ? $name : \html_writer::link($url, $name);
+        if ($this->is_downloading()) {
+            return self::spreadsheet_safe(format_string($row->name, true, ['escape' => false]));
+        }
+        return \html_writer::link($url, $name);
     }
 }

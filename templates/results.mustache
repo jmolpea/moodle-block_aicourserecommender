@@ -36,7 +36,8 @@
         "hasmorecourses": true,
         "hasmorepaths": false,
         "courses": [{
-            "type": "course", "id": 2, "position": 1, "name": "Project management", "category": "Management",
+            "type": "course", "id": 2, "position": 1, "name": "Project management", "plainname": "Project management",
+            "category": "Management",
             "image": "https://example.com/image.png", "startdate": "1 October 2026", "enddate": "", "hasdates": true,
             "reason": "It matches your goal of leading projects.", "score": 90,
             "viewurl": "https://example.com/course/view.php?id=2", "canenrol": true, "rating": 0,
@@ -84,5 +85,8 @@
 <div class="aicr-footer">
     <button type="button" class="btn btn-link btn-sm p-0" data-action="change-interests">
         {{#str}} changeinterests, block_aicourserecommender {{/str}}
+    </button>
+    <button type="button" class="btn btn-link btn-sm p-0" data-action="delete-data">
+        {{#str}} deletemydata, block_aicourserecommender {{/str}}
     </button>
 </div>

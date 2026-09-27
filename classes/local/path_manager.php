@@ -81,9 +81,10 @@ class path_manager {
      * Ordered course ids of several paths.
      *
      * @param int[] $pathids Path ids.
+     * @param bool $visibleonly Only visible courses (what learners may see).
      * @return array<int, int[]> Keyed by path id.
      */
-    public static function get_courses_of_paths(array $pathids): array {
+    public static function get_courses_of_paths(array $pathids, bool $visibleonly = false): array {
         global $DB;
         if (!$pathids) {
             return [];
@@ -92,7 +93,7 @@ class path_manager {
         $sql = "SELECT pc.id, pc.pathid, pc.courseid
                   FROM {" . self::COURSES_TABLE . "} pc
                   JOIN {course} c ON c.id = pc.courseid
-                 WHERE pc.pathid $insql
+                 WHERE pc.pathid $insql" . ($visibleonly ? ' AND c.visible = 1' : '') . "
               ORDER BY pc.pathid, pc.sortorder, pc.id";
         $result = array_fill_keys(array_map('intval', $pathids), []);
         foreach ($DB->get_records_sql($sql, $params) as $row) {
@@ -270,7 +271,8 @@ class path_manager {
         }
         $candidates = array_flip($candidateids);
         $result = [];
-        foreach (self::get_courses_of_paths(array_keys($paths)) as $pathid => $courseids) {
+        // Hidden courses are never sent to the AI nor counted for learners.
+        foreach (self::get_courses_of_paths(array_keys($paths), true) as $pathid => $courseids) {
             foreach ($courseids as $courseid) {
                 if (isset($candidates[$courseid])) {
                     $result[$pathid] = ['path' => $paths[$pathid], 'courses' => $courseids];

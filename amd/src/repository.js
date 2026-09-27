@@ -68,6 +68,13 @@ export const saveAnswers = (answers) => call('save_answers', {answers});
 export const saveConsent = () => call('save_consent', {accept: true});
 
 /**
+ * Deletes the answers, consent, ranking, ratings and activity of the user.
+ *
+ * @returns {Promise}
+ */
+export const deleteMyData = () => call('delete_my_data', {});
+
+/**
  * Saves a rating.
  *
  * @param {String} itemtype course or path.

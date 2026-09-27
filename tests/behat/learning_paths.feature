@@ -7,6 +7,9 @@ Feature: Learning paths
   Background:
     Given the following config values are set as admin:
       | behatfakeai | 1 | block_aicourserecommender |
+    # Moodle 5.2+ only shows the site home to logged-in users when it is enabled.
+    And the following config values are set as admin:
+      | enablemyhome | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | student1 | Student   | One      | student1@example.com |
@@ -29,6 +32,7 @@ Feature: Learning paths
       | Title   | Data leadership              |
       | Courses | Path course 2, Path course 1 |
     When I press "Generate description with AI"
+    And I click on "Accept and continue" "button" in the ".modal-dialog" "css_element"
     And I click on "Apply" "button" in the ".modal-dialog" "css_element"
     And I press "Save changes"
     Then I should see "Learning path saved."
@@ -47,7 +51,7 @@ Feature: Learning paths
     And the following config values are set as admin:
       | requireconsent | 0 | block_aicourserecommender |
     And I log in as "student1"
-    And I am on site homepage
+    And I visit "/index.php?redirect=0"
     And I press "Accept and continue"
     And I set the field with xpath "//textarea[@name='q2']" to "Lead a data team"
     And I press "Get my recommendations"

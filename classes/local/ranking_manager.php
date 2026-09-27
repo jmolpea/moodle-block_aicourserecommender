@@ -38,6 +38,11 @@ class ranking_manager {
     public const STATUS_ERROR = 'error';
     /** @var string Result status: the learner has not answered the questionnaire. */
     public const STATUS_QUESTIONNAIRE = 'questionnaire';
+    /** @var string Result status: the learner has not accepted the AI usage policy of the site. */
+    public const STATUS_AIPOLICY = 'aipolicy';
+
+    /** @var int Seconds to wait for the ranking lock of a learner. */
+    public const LOCK_TIMEOUT = 60;
 
     /** @var candidate_finder Candidate finder. */
     protected candidate_finder $finder;
@@ -99,36 +104,28 @@ class ranking_manager {
             $result['status'] = self::STATUS_QUESTIONNAIRE;
             return $result;
         }
-
-        $inputs = $this->build_inputs($userid);
-        $stored = self::get_stored($userid);
-        $now = \core\di::get(\core\clock::class)->time();
-
-        $ranking = null;
-        if (!$forcerefresh && $stored && $this->can_reuse($stored, $inputs, $now)) {
-            $ranking = $stored;
-        } else if (!$inputs['courses'] && !$inputs['paths']) {
-            $result['status'] = self::STATUS_NORESULTS;
+        // The AI usage policy of the site is enforced here, not only in the interface.
+        if (!$this->client->has_accepted_policy($userid)) {
+            $result['status'] = self::STATUS_AIPOLICY;
             return $result;
-        } else if (ai_client::count_user_calls_today($userid) >= config::get_int('dailylimit')) {
-            if (!$stored) {
-                $result['status'] = self::STATUS_ERROR;
-                $result['error'] = get_string('errorlimitnoranking', 'block_aicourserecommender');
-                return $result;
-            }
-            $ranking = $stored;
-            $result['notice'] = get_string('limitreached', 'block_aicourserecommender');
-        } else if (!$this->client->is_text_available()) {
+        }
+
+        // One ranking at a time per learner: parallel requests must not bypass the daily limit or pay twice.
+        $lock = \core\lock\lock_config::get_lock_factory('block_aicourserecommender')
+            ->get_lock('ranking_' . $userid, self::LOCK_TIMEOUT);
+        if (!$lock) {
             $result['status'] = self::STATUS_ERROR;
-            $result['error'] = get_string('errornoai', 'block_aicourserecommender');
+            $result['error'] = get_string('errorbusy', 'block_aicourserecommender');
             return $result;
-        } else {
-            $ranking = $this->generate($userid, $inputs, ai_client::CALL_RANKING);
-            if (!$ranking) {
-                $result['status'] = self::STATUS_ERROR;
-                $result['error'] = get_string('erroraifailed', 'block_aicourserecommender');
-                return $result;
-            }
+        }
+        try {
+            $inputs = $this->build_inputs($userid);
+            $ranking = $this->resolve_ranking($userid, $inputs, $forcerefresh, $result);
+        } finally {
+            $lock->release();
+        }
+        if (!$ranking) {
+            return $result;
         }
 
         $courses = $this->filter_items(
@@ -154,6 +151,65 @@ class ranking_manager {
         $result['hasmorepaths'] = count($paths) > count($pagepaths);
         $this->log_shown($userid, $result['courses'], $result['paths']);
         return $result;
+    }
+
+    /**
+     * Returns the ranking to show: the stored one when it can be reused, or a new one from the AI.
+     *
+     * @param int $userid User id.
+     * @param array $inputs Output of {@see build_inputs()}.
+     * @param bool $forcerefresh Ignore the stored ranking.
+     * @param array $result Result being built; status, notice and error are set here.
+     * @return \stdClass|null Ranking record, or null when there is nothing to show.
+     */
+    protected function resolve_ranking(int $userid, array $inputs, bool $forcerefresh, array &$result): ?\stdClass {
+        $stored = self::get_stored($userid);
+        $now = \core\di::get(\core\clock::class)->time();
+
+        if (!$forcerefresh && $stored && $this->can_reuse($stored, $inputs, $now)) {
+            return $stored;
+        }
+        if (!$inputs['courses'] && !$inputs['paths']) {
+            $result['status'] = self::STATUS_NORESULTS;
+            return null;
+        }
+        if (ai_client::count_user_calls_today($userid) >= config::get_int('dailylimit')) {
+            if (!$stored) {
+                $result['status'] = self::STATUS_ERROR;
+                $result['error'] = get_string('errorlimitnoranking', 'block_aicourserecommender');
+                return null;
+            }
+            $result['notice'] = get_string('limitreached', 'block_aicourserecommender');
+            return $stored;
+        }
+        if (!$this->client->is_text_available()) {
+            $result['status'] = self::STATUS_ERROR;
+            $result['error'] = get_string('errornoai', 'block_aicourserecommender');
+            return null;
+        }
+        $ranking = $this->generate($userid, $inputs, ai_client::CALL_RANKING);
+        if (!$ranking) {
+            $result['status'] = self::STATUS_ERROR;
+            $result['error'] = get_string('erroraifailed', 'block_aicourserecommender');
+        }
+        return $ranking;
+    }
+
+    /**
+     * Whether an item is part of the stored ranking of a user (it was recommended to them).
+     *
+     * @param int $userid User id.
+     * @param string $itemtype "course" or "path".
+     * @param int $itemid Item id.
+     * @return bool
+     */
+    public static function is_ranked(int $userid, string $itemtype, int $itemid): bool {
+        $stored = self::get_stored($userid);
+        if (!$stored) {
+            return false;
+        }
+        $items = json_decode((string) ($itemtype === 'path' ? $stored->paths : $stored->courses), true) ?: [];
+        return in_array($itemid, array_map(static fn($item) => (int) ($item['id'] ?? 0), $items), true);
     }
 
     /**
@@ -221,16 +277,20 @@ class ranking_manager {
      */
     public function build_inputs(int $userid, ?array $onlycourseids = null): array {
         $lang = current_language();
+        $user = \core_user::get_user($userid, '*', MUST_EXIST);
         $answers = answers_manager::get_answers($userid);
         $answerlist = [];
         foreach (questions::get_active() as $question) {
             $answerlist[] = [
                 'question' => html_to_text($question['text'], 0, false),
-                'answer' => $answers[$question['slot']] ?? '',
+                'answer' => profile_collector::redact($answers[$question['slot']] ?? '', $user),
             ];
         }
         $profile = profile_collector::collect($userid);
-        $negative = feedback_manager::get_negative_for_prompt($userid);
+        $negative = array_map(
+            static fn($line) => profile_collector::redact($line, $user),
+            feedback_manager::get_negative_for_prompt($userid)
+        );
 
         $candidates = $this->finder->get_candidates($userid, $onlycourseids);
         $candidateids = array_keys($candidates);
@@ -402,30 +462,38 @@ class ranking_manager {
         if (!$stored || !$newcourseids || !$this->client->is_text_available()) {
             return [];
         }
-        $inputs = $this->build_inputs($userid, $newcourseids);
-        if (!$inputs['courses']) {
+        // Never run at the same time as a ranking requested by the learner.
+        $lock = \core\lock\lock_config::get_lock_factory('block_aicourserecommender')->get_lock('ranking_' . $userid, 0);
+        if (!$lock) {
             return [];
         }
-        $parsed = $this->call_ranking($userid, $inputs, ai_client::CALL_INCREMENTAL);
-        if ($parsed === null) {
-            return [];
-        }
-        $ranked = json_decode((string) $stored->courses, true) ?: [];
-        $newids = array_flip(array_map(static fn($i) => $i['id'], $parsed['courses']));
-        $ranked = array_values(array_filter($ranked, static fn($i) => !isset($newids[(int) $i['id']])));
-        $ranked = array_merge($ranked, $parsed['courses']);
-        usort($ranked, static fn(array $a, array $b): int => $b['score'] <=> $a['score']);
+        try {
+            $inputs = $this->build_inputs($userid, $newcourseids);
+            $parsed = $inputs['courses'] ? $this->call_ranking($userid, $inputs, ai_client::CALL_INCREMENTAL) : null;
+            // Reload: the stored ranking may have changed while waiting for the AI.
+            $stored = self::get_stored($userid);
+            if ($parsed === null || !$stored) {
+                return [];
+            }
+            $ranked = json_decode((string) $stored->courses, true) ?: [];
+            $newids = array_flip(array_map(static fn($i) => $i['id'], $parsed['courses']));
+            $ranked = array_values(array_filter($ranked, static fn($i) => !isset($newids[(int) $i['id']])));
+            $ranked = array_merge($ranked, $parsed['courses']);
+            usort($ranked, static fn(array $a, array $b): int => $b['score'] <=> $a['score']);
 
-        $candidates = json_decode((string) $stored->candidates, true) ?: [];
-        foreach ($inputs['coursehashes'] as $id => $hash) {
-            $candidates[$id] = $hash;
+            $candidates = json_decode((string) $stored->candidates, true) ?: [];
+            foreach ($inputs['coursehashes'] as $id => $hash) {
+                $candidates[$id] = $hash;
+            }
+            ksort($candidates);
+            $stored->courses = json_encode(array_slice($ranked, 0, config::get_int('maxranked')), JSON_UNESCAPED_UNICODE);
+            $stored->candidates = json_encode((object) $candidates);
+            $stored->timemodified = \core\di::get(\core\clock::class)->time();
+            $DB->update_record(self::TABLE, $stored);
+            return $parsed['courses'];
+        } finally {
+            $lock->release();
         }
-        ksort($candidates);
-        $stored->courses = json_encode(array_slice($ranked, 0, config::get_int('maxranked')), JSON_UNESCAPED_UNICODE);
-        $stored->candidates = json_encode((object) $candidates);
-        $stored->timemodified = \core\di::get(\core\clock::class)->time();
-        $DB->update_record(self::TABLE, $stored);
-        return $parsed['courses'];
     }
 
     /**

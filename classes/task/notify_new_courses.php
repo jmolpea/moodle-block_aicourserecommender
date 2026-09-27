@@ -195,7 +195,8 @@ class notify_new_courses extends \core\task\scheduled_task {
      */
     protected function send_notification(\stdClass $user, \stdClass $course, string $reason): void {
         $context = \context_course::instance($course->id);
-        $name = format_string($course->fullname, true, ['context' => $context]);
+        // Plain text; it is escaped with s() where HTML is built.
+        $name = format_string($course->fullname, true, ['context' => $context, 'escape' => false]);
         $url = new \moodle_url('/course/view.php', ['id' => $course->id]);
 
         $message = new \core\message\message();

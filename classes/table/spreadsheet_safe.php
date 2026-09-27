@@ -14,19 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+namespace block_aicourserecommender\table;
+
 /**
- * Version information for block_aicourserecommender.
+ * Protects downloaded report cells against spreadsheet formula injection.
  *
  * @package    block_aicourserecommender
  * @copyright  2026 Pluginia <https://pluginia.es>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'block_aicourserecommender';
-$plugin->version   = 2026092800;
-$plugin->requires  = 2024100700; // Moodle 4.5.0.
-$plugin->supported = [405, 502];
-$plugin->maturity  = MATURITY_BETA;
-$plugin->release   = '1.0.0-beta';
+trait spreadsheet_safe {
+    /**
+     * Prefixes a value with an apostrophe when a spreadsheet would read it as a formula.
+     *
+     * Course names, user names and provider errors are written by other people and end up in CSV or Excel files
+     * opened by administrators.
+     *
+     * @param string $value Cell value.
+     * @return string
+     */
+    public static function spreadsheet_safe(string $value): string {
+        return preg_match('/^[=+\-@\t\r]/', $value) ? "'" . $value : $value;
+    }
+}

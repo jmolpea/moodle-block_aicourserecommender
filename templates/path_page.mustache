@@ -49,7 +49,7 @@
     <header class="aicr-path-header mb-4">
         <img src="{{image}}" alt="" class="aicr-path-banner">
         <div class="aicr-path-intro">
-            <h2 class="aicr-path-title">{{name}}</h2>
+            <h2 class="aicr-path-title">{{{name}}}</h2>
             <div class="aicr-path-description">{{{description}}}</div>
         </div>
     </header>
@@ -84,7 +84,7 @@
                     <div class="aicr-path-course-body">
                         <h4 class="h6 mb-1">
                             <span class="sr-only visually-hidden">{{#str}} stepnumber, block_aicourserecommender, {{number}} {{/str}}</span>
-                            <a href="{{url}}">{{name}}</a>
+                            <a href="{{url}}">{{{name}}}</a>
                         </h4>
                         <p class="small mb-1">
                             <span class="aicr-status aicr-status-{{status}}">{{statuslabel}}</span>
@@ -93,7 +93,7 @@
                         </p>
                         {{#hasprogress}}
                         <div class="progress aicr-mini-progress mb-1" role="progressbar" aria-valuenow="{{progress}}"
-                            aria-valuemin="0" aria-valuemax="100" aria-label="{{name}}">
+                            aria-valuemin="0" aria-valuemax="100" aria-label="{{{name}}}">
                             <div class="progress-bar" style="width: {{progress}}%"></div>
                         </div>
                         {{/hasprogress}}

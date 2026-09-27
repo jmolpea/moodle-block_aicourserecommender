@@ -33,6 +33,18 @@ import {getString, getStrings} from 'core/str';
 
 const STATES = ['consent', 'aipolicy', 'questionnaire', 'loading', 'results', 'noresults', 'error'];
 
+/**
+ * Escapes text for use inside HTML (the confirmation dialogue body is HTML).
+ *
+ * @param {String} text Text.
+ * @returns {String}
+ */
+const escapeHtml = (text) => {
+    const div = document.createElement('div');
+    div.textContent = text || '';
+    return div.innerHTML;
+};
+
 /** @type {Number} Maximum time to wait for the click log before following a link. */
 const CLICK_TIMEOUT = 700;
 
@@ -186,6 +198,9 @@ class RecommenderBlock {
                 case 'change-interests':
                     this.openQuestionnaire();
                     break;
+                case 'delete-data':
+                    this.deleteData(target);
+                    break;
                 case 'retry':
                     this.load(false);
                     break;
@@ -273,9 +288,52 @@ class RecommenderBlock {
      */
     openQuestionnaire() {
         this.region('form-error').hidden = true;
-        this.root.querySelector('[data-action="cancel-edit"]').hidden = this.root.dataset.hasanswers !== '1';
+        const noanswers = this.root.dataset.hasanswers !== '1';
+        this.root.querySelector('[data-action="cancel-edit"]').hidden = noanswers;
+        this.region('questionnaire').querySelector('[data-action="delete-data"]').hidden = noanswers;
         this.show('questionnaire');
         this.focusFirst('questionnaire');
+    }
+
+    /**
+     * Deletes the data of the learner after confirmation and starts again.
+     *
+     * @param {HTMLButtonElement} button Delete button.
+     */
+    async deleteData(button) {
+        const [title, question, label, done] = await getStrings([
+            {key: 'deletemydata', component: 'block_aicourserecommender'},
+            {key: 'deletemydataconfirm', component: 'block_aicourserecommender'},
+            {key: 'delete', component: 'core'},
+            {key: 'deletemydatadone', component: 'block_aicourserecommender'},
+        ]);
+        try {
+            await Notification.saveCancelPromise(title, question, label);
+        } catch (cancelled) {
+            button.focus();
+            return;
+        }
+        try {
+            await Repository.deleteMyData();
+        } catch (error) {
+            Notification.exception(error);
+            return;
+        }
+        this.root.dataset.hasanswers = '0';
+        this.root.querySelectorAll('textarea[data-slot]').forEach((textarea) => {
+            textarea.value = '';
+            this.updateCounter(textarea);
+        });
+        this.region('results').innerHTML = '';
+        if (this.root.dataset.requireconsent === '1') {
+            this.region('consent-checkbox').checked = false;
+            this.root.querySelector('[data-action="start"]').disabled = true;
+            this.show('consent');
+            this.focusFirst('consent');
+        } else {
+            this.openQuestionnaire();
+        }
+        this.announce(done);
     }
 
     /**
@@ -345,6 +403,11 @@ class RecommenderBlock {
             case 'questionnaire':
                 this.root.dataset.hasanswers = '0';
                 this.openQuestionnaire();
+                return;
+            case 'aipolicy':
+                this.root.dataset.policyaccepted = '0';
+                this.show('aipolicy');
+                this.focusFirst('aipolicy');
                 return;
             case 'noresults':
                 this.show('noresults');
@@ -450,7 +513,7 @@ class RecommenderBlock {
     async enrol(button, card) {
         const [title, question, label] = await getStrings([
             {key: 'enrolconfirmtitle', component: 'block_aicourserecommender'},
-            {key: 'enrolconfirm', component: 'block_aicourserecommender', param: button.dataset.name},
+            {key: 'enrolconfirm', component: 'block_aicourserecommender', param: escapeHtml(button.dataset.name)},
             {key: 'enrolme', component: 'block_aicourserecommender'},
         ]);
         try {

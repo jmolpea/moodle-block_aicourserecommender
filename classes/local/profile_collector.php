@@ -88,9 +88,50 @@ class profile_collector {
             }
         }
 
+        foreach ($data as $label => $value) {
+            $data[$label] = self::redact($value, $user);
+        }
         $data['language'] = self::get_language_name(current_language());
 
         return array_filter($data, static fn($value) => $value !== '');
+    }
+
+    /**
+     * Removes personal identifiers from free text before it is sent to the AI: email addresses, web addresses,
+     * phone-like numbers and the names, username and email of the user.
+     *
+     * @param string $text Text.
+     * @param \stdClass|null $user User whose identifiers are removed.
+     * @return string
+     */
+    public static function redact(string $text, ?\stdClass $user = null): string {
+        if ($text === '') {
+            return '';
+        }
+        $text = preg_replace('/[^\s@<>()]+@[^\s@<>()]+\.[a-z]{2,}/iu', '[email]', $text);
+        $text = preg_replace('~\b(?:https?://|www\.)\S+~iu', '[link]', $text);
+        // Phone and document numbers: 9 or more digits, with the usual separators (years like 2020-2024 are kept).
+        $text = preg_replace_callback('/\+?\d[\d\s().\/-]{6,}\d/u', static function (array $match): string {
+            return preg_match_all('/\d/', $match[0]) >= 9 ? '[number]' : $match[0];
+        }, $text);
+        if ($user) {
+            $identifiers = [];
+            foreach (['firstname', 'lastname', 'middlename', 'alternatename', 'username', 'idnumber'] as $field) {
+                foreach (preg_split('/\s+/u', trim((string) ($user->$field ?? ''))) as $part) {
+                    if (\core_text::strlen($part) >= 3) {
+                        $identifiers[] = preg_quote($part, '/');
+                    }
+                }
+            }
+            if ($identifiers) {
+                $text = preg_replace(
+                    '/(?<![\p{L}\p{N}])(?:' . implode('|', array_unique($identifiers)) . ')(?![\p{L}\p{N}])/iu',
+                    '[name]',
+                    $text
+                );
+            }
+        }
+        return trim(preg_replace('/\s+/u', ' ', $text));
     }
 
     /**

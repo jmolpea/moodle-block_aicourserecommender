@@ -297,6 +297,13 @@ if ($ADMIN->fulltree) {
         new lang_string('consenttext_desc', $component, get_string('consenttextdefault', $component)),
         ''
     ));
+    $settings->add(new admin_setting_configtext(
+        'block_aicourserecommender/retentiondays',
+        new lang_string('retentiondays', $component),
+        new lang_string('retentiondays_desc', $component),
+        365,
+        PARAM_INT
+    ));
 }
 
 $ADMIN->add('block_aicourserecommender_category', $settings);

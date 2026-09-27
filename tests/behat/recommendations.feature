@@ -7,6 +7,9 @@ Feature: Get AI course recommendations
   Background:
     Given the following config values are set as admin:
       | behatfakeai | 1 | block_aicourserecommender |
+    # Moodle 5.2+ only shows the site home to logged-in users when it is enabled.
+    And the following config values are set as admin:
+      | enablemyhome | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | student1 | Student   | One      | student1@example.com |
@@ -25,7 +28,7 @@ Feature: Get AI course recommendations
       | blockname           | contextlevel | reference | pagetypepattern | defaultregion |
       | aicourserecommender | System       | 1         | site-index      | side-pre      |
     And I log in as "student1"
-    And I am on site homepage
+    And I visit "/index.php?redirect=0"
     And I click on "I have read the notice and I want personalised recommendations" "checkbox"
     And I press "Start"
     And I press "Accept and continue"

@@ -42,8 +42,8 @@ class fake_ai_client extends ai_client {
     /** @var bool Whether image generation is available. */
     public bool $imageavailable = true;
 
-    /** @var bool|null Policy status; null uses the real status. */
-    public ?bool $policyaccepted = null;
+    /** @var bool|null Policy status; null uses the real status. PHPUnit tests assume it was accepted. */
+    public ?bool $policyaccepted = true;
 
     #[\Override]
     public function is_text_available(): bool {

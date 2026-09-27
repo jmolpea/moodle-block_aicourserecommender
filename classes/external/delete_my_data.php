@@ -16,51 +16,40 @@
 
 namespace block_aicourserecommender\external;
 
-use block_aicourserecommender\local\enrolment_helper;
+use block_aicourserecommender\local\answers_manager;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
 
 /**
- * Enrols the current user in a recommended course (self enrolment without key only).
+ * Deletes the answers, consent, rankings, ratings and activity of the current user.
  *
  * @package    block_aicourserecommender
  * @copyright  2026 Pluginia <https://pluginia.es>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class enrol_course extends external_api {
+class delete_my_data extends external_api {
     /**
      * Parameters.
      *
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters([
-            'courseid' => new external_value(PARAM_INT, 'Course id'),
-        ]);
+        return new external_function_parameters([]);
     }
 
     /**
-     * Enrols the user.
+     * Deletes the data.
      *
-     * @param int $courseid Course id.
      * @return array
      */
-    public static function execute(int $courseid): array {
-        ['courseid' => $courseid] = self::validate_parameters(self::execute_parameters(), ['courseid' => $courseid]);
+    public static function execute(): array {
         global $USER;
         $context = helper::require_user(false);
         self::validate_context($context);
-        // Only courses recommended to the user; any other self enrolment goes through the course page.
-        helper::require_ranked_item((int) $USER->id, 'course', $courseid);
-
-        $success = (new enrolment_helper())->enrol_course($courseid);
-        return [
-            'success' => $success,
-            'url' => (new \moodle_url('/course/view.php', ['id' => $courseid]))->out(false),
-            'message' => $success ? '' : get_string('errorenrol', 'block_aicourserecommender'),
-        ];
+        answers_manager::delete_my_data((int) $USER->id);
+        return ['success' => true];
     }
 
     /**
@@ -70,9 +59,7 @@ class enrol_course extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'success' => new external_value(PARAM_BOOL, 'Enrolled'),
-            'url' => new external_value(PARAM_URL, 'Course URL'),
-            'message' => new external_value(PARAM_TEXT, 'Error message'),
+            'success' => new external_value(PARAM_BOOL, 'Deleted'),
         ]);
     }
 }

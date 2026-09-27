@@ -46,6 +46,11 @@ class hook_callbacks {
             return;
         }
         require_once($CFG->dirroot . '/blocks/aicourserecommender/tests/fixtures/fake_ai_client.php');
-        $hook->add_definition(ai_client::class, static fn() => new \block_aicourserecommender\tests\fake_ai_client());
+        $hook->add_definition(ai_client::class, static function () {
+            $client = new \block_aicourserecommender\tests\fake_ai_client();
+            // Behat goes through the real AI usage policy flow.
+            $client->policyaccepted = null;
+            return $client;
+        });
     }
 }

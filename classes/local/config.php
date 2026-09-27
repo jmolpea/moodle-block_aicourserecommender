@@ -47,6 +47,7 @@ class config {
         'excludefield' => 0,
         'includehiddenfields' => 0,
         'summariesperrun' => 50,
+        'retentiondays' => 365,
     ];
 
     /** @var string[] Standard profile fields that can be sent to the AI. */

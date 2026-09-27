@@ -32,6 +32,30 @@ class answers_manager {
     /** @var string History table. */
     public const HISTORY_TABLE = 'block_aicourserecommender_answerhist';
 
+    /** @var int Versions of the answers kept per learner. */
+    public const MAX_HISTORY = 50;
+
+    /**
+     * Deletes the answers, history, ranking, ratings and activity of a user (right to erasure from the block).
+     *
+     * The AI call log is kept: it is needed for the daily limit and the cost report, and it is removed by the
+     * retention task and the Privacy API.
+     *
+     * @param int $userid User id.
+     * @return void
+     */
+    public static function delete_my_data(int $userid): void {
+        global $DB;
+        $transaction = $DB->start_delegated_transaction();
+        foreach (
+            [self::TABLE, self::HISTORY_TABLE, ranking_manager::TABLE, feedback_manager::TABLE,
+                activity_logger::TABLE] as $table
+        ) {
+            $DB->delete_records($table, ['userid' => $userid]);
+        }
+        $transaction->allow_commit();
+    }
+
     /**
      * Returns the stored record of a user, if any.
      *
@@ -154,6 +178,19 @@ class answers_manager {
             'answers' => $json,
             'timecreated' => $now,
         ]);
+        // Keep only the last versions: the history is for the report, not an archive.
+        $old = $DB->get_records_select(
+            self::HISTORY_TABLE,
+            'userid = :userid',
+            ['userid' => $userid],
+            'timecreated DESC, id DESC',
+            'id',
+            self::MAX_HISTORY
+        );
+        if ($old) {
+            [$insql, $params] = $DB->get_in_or_equal(array_keys($old), SQL_PARAMS_NAMED);
+            $DB->delete_records_select(self::HISTORY_TABLE, "id $insql", $params);
+        }
         ranking_manager::invalidate($userid);
         $transaction->allow_commit();
 

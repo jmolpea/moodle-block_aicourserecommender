@@ -21,13 +21,14 @@
 
     Context variables required for this template:
     * uniqid - Unique id of the block
-    * id, position, name, category, image, startdate, enddate, hasdates, reason, viewurl, canenrol
+    * id, position, name (formatted), plainname (for the confirmation), category, image, startdate, enddate, hasdates, reason, viewurl, canenrol
     * ratedup, rateddown - Current rating of the user
 
     Example context (json):
     {
         "uniqid": "aicr123",
-        "type": "course", "id": 2, "position": 1, "name": "Project management", "category": "Management",
+        "type": "course", "id": 2, "position": 1, "name": "Project management", "plainname": "Project management",
+        "category": "Management",
         "image": "https://example.com/image.png", "startdate": "1 October 2026", "enddate": "20 December 2026",
         "hasdates": true, "reason": "It matches your goal of leading projects.", "score": 90,
         "viewurl": "https://example.com/course/view.php?id=2", "canenrol": true, "rating": 0,
@@ -38,8 +39,8 @@
     data-position="{{position}}" aria-labelledby="{{uniqid}}-course-{{id}}-name">
     <img src="{{image}}" alt="" class="aicr-card-img" loading="lazy">
     <div class="card-body aicr-card-body">
-        <h4 class="h6 aicr-card-title" id="{{uniqid}}-course-{{id}}-name">{{name}}</h4>
-        {{#category}}<p class="aicr-meta small text-muted mb-1">{{category}}</p>{{/category}}
+        <h4 class="h6 aicr-card-title" id="{{uniqid}}-course-{{id}}-name">{{{name}}}</h4>
+        {{#category}}<p class="aicr-meta small text-muted mb-1">{{{category}}}</p>{{/category}}
         {{#hasdates}}
         <p class="aicr-meta small mb-1">
             {{#startdate}}<span class="aicr-date">{{#str}} startson, block_aicourserecommender, {{startdate}} {{/str}}</span>{{/startdate}}
@@ -56,7 +57,7 @@
             <a class="btn btn-outline-primary btn-sm" href="{{viewurl}}" data-action="view"
                 aria-describedby="{{uniqid}}-course-{{id}}-name">{{#str}} viewcourse, block_aicourserecommender {{/str}}</a>
             {{#canenrol}}
-            <button type="button" class="btn btn-primary btn-sm" data-action="enrol" data-name="{{name}}"
+            <button type="button" class="btn btn-primary btn-sm" data-action="enrol" data-name="{{plainname}}"
                 aria-describedby="{{uniqid}}-course-{{id}}-name">{{#str}} enrolme, block_aicourserecommender {{/str}}</button>
             {{/canenrol}}
         </div>

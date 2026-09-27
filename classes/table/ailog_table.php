@@ -28,6 +28,8 @@ require_once($CFG->libdir . '/tablelib.php');
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ailog_table extends \table_sql {
+    use spreadsheet_safe;
+
     /** @var bool Whether the user column is shown. */
     protected bool $showusers;
 
@@ -107,7 +109,7 @@ class ailog_table extends \table_sql {
         if (empty($row->userid)) {
             return '-';
         }
-        return fullname($row);
+        return $this->is_downloading() ? self::spreadsheet_safe(fullname($row)) : fullname($row);
     }
 
     /**
@@ -140,7 +142,7 @@ class ailog_table extends \table_sql {
      */
     public function col_error($row) {
         $error = (string) $row->error;
-        return $this->is_downloading() ? $error : s(shorten_text($error, 120));
+        return $this->is_downloading() ? self::spreadsheet_safe($error) : s(shorten_text($error, 120));
     }
 
     /**

@@ -121,6 +121,8 @@ class response_parser {
     public static function clean_reason(string $reason): string {
         $reason = clean_param($reason, PARAM_TEXT);
         $reason = str_replace(['**', '__', "\x60"], '', $reason);
+        // Course content could inject links into the answer (prompt injection); reasons never contain addresses.
+        $reason = preg_replace('~\b(?:https?://|www\.)\S+|[^\s@]+@[^\s@]+\.[a-z]{2,}~iu', '', $reason);
         $reason = trim(preg_replace('/\s+/u', ' ', $reason));
         if (\core_text::strlen($reason) > self::MAX_REASON_LENGTH) {
             $reason = rtrim(\core_text::substr($reason, 0, self::MAX_REASON_LENGTH - 1)) . '…';

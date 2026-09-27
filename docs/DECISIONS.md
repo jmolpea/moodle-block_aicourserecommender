@@ -94,3 +94,25 @@ Learner data is exported and deleted in the user context. Paths only store `user
 ## Capabilities
 
 `block/aicourserecommender:use` is checked in the system context (learners, dashboard and front page are not course contexts). External functions validate the system context.
+
+## Security, permissions and privacy review
+
+A second, adversarial pass over every entry point (10 external functions, 4 pages, the file callback, templates, JavaScript, prompts and tasks). Changes made:
+
+| Risk | Change |
+|---|---|
+| The AI usage policy was only enforced by the interface: a direct AJAX call could send learner data to the AI without acceptance. | `get_recommendations` returns status `aipolicy` until the policy is accepted. The path AI functions throw `erroraipolicy`; the form shows the core policy text and accepts it with `core_ai/policy`. |
+| Parallel requests (the session is read-only) could all pass the daily-limit check and pay several AI calls. | A per-learner lock (`\core\lock`) wraps the whole decision and generation; the second request waits and reuses the new ranking. The daily task uses the same lock without waiting. |
+| Ratings, clicks and enrolments accepted any course or path id, so statistics could be forged. | `submit_feedback`, `log_click` and `enrol_course` only accept items of the learner's stored ranking. Click positions are bounded. |
+| `generate_path_description` read names and summaries of any course id, including hidden ones. | Only courses the manager can see (`can_view_course_info`). |
+| Hidden courses inside a path reached the ranking prompt and the course count. | Learner-facing path data only includes visible courses. |
+| Free text (profile description, answers, rating reasons) can contain emails, phone numbers, links or the learner's own name. | `profile_collector::redact()` replaces them with `[email]`, `[number]`, `[link]`, `[name]` before anything is sent. |
+| Course content could inject links into the AI reasons (prompt injection). | Reasons are plain text without URLs or email addresses. |
+| Double escaping of names and a course name inserted as HTML in the enrolment dialogue. | Formatted names use triple mustache; the dialogue receives a plain name escaped in JavaScript. |
+| SVG path images can carry scripts. | Only JPEG, PNG, GIF and WebP are accepted; any other type is served as a download. Images need the `use` or `managepaths` capability. |
+| CSV/Excel formula injection through course names, user names or provider errors in report downloads. | Cells starting with `= + - @` are prefixed with an apostrophe. |
+| Unlimited growth of personal data. | Daily cleanup task with a retention setting (365 days, minimum 30) and at most 50 answer versions per learner. |
+| No self-service erasure. | "Delete my data" in the block (`delete_my_data`): answers, consent, ranking, ratings and activity. The AI call log is kept for the daily limit and cost control, and is removed by the retention task and the Privacy API. |
+| The ranking request could keep the session locked for the duration of the AI call. | `get_recommendations` and `get_more` use `readonlysession`. |
+
+Checked and kept as is: every external function validates parameters and the system context and requires `use` or `managepaths`; all SQL uses placeholders; table sorting is limited to defined columns; management actions require `sesskey`; the path form only copies AI images from the manager's own draft area; the fake AI client is only loaded on Behat test sites; no credentials are stored.

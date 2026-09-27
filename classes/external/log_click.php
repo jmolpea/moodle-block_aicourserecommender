@@ -18,6 +18,7 @@ namespace block_aicourserecommender\external;
 
 use block_aicourserecommender\event\recommendation_clicked;
 use block_aicourserecommender\local\activity_logger;
+use block_aicourserecommender\local\config;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
@@ -60,24 +61,18 @@ class log_click extends external_api {
         );
         $context = helper::require_user();
         self::validate_context($context);
-        if (!in_array($params['itemtype'], ['course', 'path'], true)) {
-            throw new \invalid_parameter_exception('Invalid item type');
-        }
+        helper::require_ranked_item((int) $USER->id, $params['itemtype'], $params['itemid']);
+        $maxposition = config::get_int($params['itemtype'] === 'path' ? 'maxpaths' : 'maxranked');
+        $position = max(0, min($maxposition, $params['position']));
 
-        activity_logger::log(
-            (int) $USER->id,
-            activity_logger::ACTION_CLICK,
-            $params['itemtype'],
-            $params['itemid'],
-            max(0, $params['position'])
-        );
+        activity_logger::log((int) $USER->id, activity_logger::ACTION_CLICK, $params['itemtype'], $params['itemid'], $position);
         recommendation_clicked::create([
             'context' => $context,
             'relateduserid' => (int) $USER->id,
             'other' => [
                 'itemtype' => $params['itemtype'],
                 'itemid' => $params['itemid'],
-                'position' => max(0, $params['position']),
+                'position' => $position,
             ],
         ])->trigger();
         return ['success' => true];
