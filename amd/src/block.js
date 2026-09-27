@@ -306,7 +306,7 @@ class RecommenderBlock {
             this.root.dataset.hasanswers = '1';
             await this.load(false);
         } catch (error) {
-            errorregion.textContent = error.message || String(error);
+            errorregion.textContent = error.message || await getString('erroraifailed', 'block_aicourserecommender');
             errorregion.hidden = false;
         } finally {
             button.disabled = false;

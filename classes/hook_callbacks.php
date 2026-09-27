@@ -34,7 +34,15 @@ class hook_callbacks {
      */
     public static function di_configuration(\core\hook\di_configuration $hook): void {
         global $CFG;
-        if (!defined('BEHAT_SITE_RUNNING') || !get_config('block_aicourserecommender', 'behatfakeai')) {
+        // The container is built during setup, also while the test site is being installed.
+        if (!defined('BEHAT_SITE_RUNNING') || during_initial_install()) {
+            return;
+        }
+        try {
+            if (!get_config('block_aicourserecommender', 'behatfakeai')) {
+                return;
+            }
+        } catch (\Throwable $e) {
             return;
         }
         require_once($CFG->dirroot . '/blocks/aicourserecommender/tests/fixtures/fake_ai_client.php');
