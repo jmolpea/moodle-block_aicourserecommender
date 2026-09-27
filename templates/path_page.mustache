@@ -1,0 +1,113 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_aicourserecommender/path_page
+
+    Landing page of a learning path: header, progress, ordered courses and "Enrol me in the whole path".
+
+    Context variables required for this template:
+    * id, uniqid, name, description, image
+    * courses - Ordered courses with status
+    * total, completed, percentage, progresstext
+    * canenrolall, enrolsummary
+
+    Example context (json):
+    {
+        "id": 1, "uniqid": "aicrpath1", "name": "Leadership path", "description": "<p>Learn to lead teams.</p>",
+        "image": "https://example.com/p.png", "hascourses": true, "total": 2, "completed": 1, "percentage": 50,
+        "progresstext": "1 of 2 courses completed", "canenrolall": true,
+        "enrolsummary": "You will be enrolled in 1 course. 0 courses are not available now.",
+        "courses": [
+            {"number": 1, "id": 2, "name": "Basics", "image": "https://example.com/c.png", "url": "https://example.com",
+             "startdate": "1 October 2026", "enddate": "", "summary": "Intro", "status": "completed",
+             "statuslabel": "Completed", "iscompleted": true, "isinprogress": false, "isavailable": false,
+             "isunavailable": false, "hasprogress": false, "progress": 100, "futurestart": false,
+             "futurestartdate": "", "directenrol": false},
+            {"number": 2, "id": 3, "name": "Advanced", "image": "https://example.com/c.png", "url": "https://example.com",
+             "startdate": "", "enddate": "", "summary": "More", "status": "available", "statuslabel": "Available",
+             "iscompleted": false, "isinprogress": false, "isavailable": true, "isunavailable": false,
+             "hasprogress": false, "progress": 0, "futurestart": false, "futurestartdate": "", "directenrol": true}
+        ]
+    }
+}}
+<div class="aicr-pathpage" id="{{uniqid}}" data-region="aicr-path" data-pathid="{{id}}"
+    data-enrolsummary="{{enrolsummary}}">
+    <header class="aicr-path-header mb-4">
+        <img src="{{image}}" alt="" class="aicr-path-banner">
+        <div class="aicr-path-intro">
+            <h2 class="aicr-path-title">{{name}}</h2>
+            <div class="aicr-path-description">{{{description}}}</div>
+        </div>
+    </header>
+
+    {{#hascourses}}
+    <section class="aicr-path-progress mb-4" aria-labelledby="{{uniqid}}-progress">
+        <h3 id="{{uniqid}}-progress" class="h5">{{#str}} yourprogress, block_aicourserecommender {{/str}}</h3>
+        <div class="progress" role="progressbar" aria-valuenow="{{percentage}}" aria-valuemin="0" aria-valuemax="100"
+            aria-label="{{progresstext}}">
+            <div class="progress-bar" style="width: {{percentage}}%"></div>
+        </div>
+        <p class="small mt-1 mb-0">{{progresstext}}</p>
+    </section>
+
+    {{#canenrolall}}
+    <div class="aicr-path-enrol mb-4">
+        <button type="button" class="btn btn-primary" data-action="enrol-path">
+            {{#str}} enrolpath, block_aicourserecommender {{/str}}
+        </button>
+        <div data-region="enrol-results" aria-live="polite"></div>
+    </div>
+    {{/canenrolall}}
+
+    <section aria-labelledby="{{uniqid}}-courses">
+        <h3 id="{{uniqid}}-courses" class="h5">{{#str}} pathcourses, block_aicourserecommender {{/str}}</h3>
+        <ol class="aicr-path-courses list-unstyled">
+            {{#courses}}
+            <li class="aicr-path-course card mb-3" data-status="{{status}}">
+                <div class="aicr-path-course-inner">
+                    <span class="aicr-path-number" aria-hidden="true">{{number}}</span>
+                    <img src="{{image}}" alt="" class="aicr-path-course-img" loading="lazy">
+                    <div class="aicr-path-course-body">
+                        <h4 class="h6 mb-1">
+                            <span class="sr-only visually-hidden">{{#str}} stepnumber, block_aicourserecommender, {{number}} {{/str}}</span>
+                            <a href="{{url}}">{{name}}</a>
+                        </h4>
+                        <p class="small mb-1">
+                            <span class="aicr-status aicr-status-{{status}}">{{statuslabel}}</span>
+                            {{#hasprogress}}<span> · {{#str}} progresspercent, block_aicourserecommender, {{progress}} {{/str}}</span>{{/hasprogress}}
+                            {{#futurestart}}<span> · {{#str}} nextedition, block_aicourserecommender, {{futurestartdate}} {{/str}}</span>{{/futurestart}}
+                        </p>
+                        {{#hasprogress}}
+                        <div class="progress aicr-mini-progress mb-1" role="progressbar" aria-valuenow="{{progress}}"
+                            aria-valuemin="0" aria-valuemax="100" aria-label="{{name}}">
+                            <div class="progress-bar" style="width: {{progress}}%"></div>
+                        </div>
+                        {{/hasprogress}}
+                        {{#startdate}}<p class="small text-muted mb-1">{{#str}} startson, block_aicourserecommender, {{startdate}} {{/str}}
+                            {{#enddate}} · {{#str}} endson, block_aicourserecommender, {{enddate}} {{/str}}{{/enddate}}</p>{{/startdate}}
+                        {{#summary}}<p class="small mb-0">{{summary}}</p>{{/summary}}
+                    </div>
+                </div>
+            </li>
+            {{/courses}}
+        </ol>
+    </section>
+    {{/hascourses}}
+    {{^hascourses}}
+    <p>{{#str}} pathnocourses, block_aicourserecommender {{/str}}</p>
+    {{/hascourses}}
+</div>

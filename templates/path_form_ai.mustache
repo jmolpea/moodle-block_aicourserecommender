@@ -1,0 +1,49 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_aicourserecommender/path_form_ai
+
+    AI button of the learning path form (description or image).
+
+    Context variables required for this template:
+    * action - generate-description or generate-image
+    * label - Button label
+    * available - Whether the AI action is available
+    * unavailable - Message when not available
+    * isimage - Whether this is the image button
+
+    Example context (json):
+    {
+        "action": "generate-description", "label": "Generate description with AI", "available": true,
+        "unavailable": "", "isimage": false
+    }
+}}
+<div class="aicr-ai-tool" data-region="ai-tool">
+    {{#available}}
+    <button type="button" class="btn btn-secondary btn-sm" data-action="{{action}}">{{label}}</button>
+    <span class="small text-muted ms-2 ml-2" data-region="ai-status" aria-live="polite"></span>
+    {{#isimage}}
+    <div class="aicr-ai-image-preview mt-2" data-region="ai-image-applied" hidden>
+        <img src="" alt="" data-region="ai-image-img" class="img-fluid border">
+        <p class="small text-muted mt-1 mb-0">{{#str}} aiimagewillreplace, block_aicourserecommender {{/str}}</p>
+    </div>
+    {{/isimage}}
+    {{/available}}
+    {{^available}}
+    <span class="small text-muted">{{unavailable}}</span>
+    {{/available}}
+</div>

@@ -1,0 +1,80 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_aicourserecommender/managepaths
+
+    List of learning paths with their actions.
+
+    Context variables required for this template:
+    * paths - Paths with urls
+    * haspaths - Whether there are paths
+    * addurl, reporturl, canreport, settingsurl, cansettings
+
+    Example context (json):
+    {
+        "haspaths": true, "addurl": "https://example.com/add", "reporturl": "https://example.com/report",
+        "canreport": true, "settingsurl": "https://example.com/settings", "cansettings": true,
+        "paths": [{
+            "id": 1, "name": "Leadership", "visible": true, "coursecount": 3, "viewurl": "https://example.com/v",
+            "editurl": "https://example.com/e", "hideurl": "https://example.com/h", "showurl": "https://example.com/s",
+            "deleteurl": "https://example.com/d", "upurl": "", "downurl": "https://example.com/down"
+        }]
+    }
+}}
+<div class="aicr-managepaths">
+    <div class="aicr-buttons mb-3">
+        <a href="{{addurl}}" class="btn btn-primary">{{#str}} addpath, block_aicourserecommender {{/str}}</a>
+        {{#canreport}}<a href="{{reporturl}}" class="btn btn-secondary">{{#str}} report, block_aicourserecommender {{/str}}</a>{{/canreport}}
+        {{#cansettings}}<a href="{{settingsurl}}" class="btn btn-secondary">{{#str}} settings, block_aicourserecommender {{/str}}</a>{{/cansettings}}
+    </div>
+    {{#haspaths}}
+    <table class="table generaltable aicr-paths-table">
+        <caption class="sr-only visually-hidden">{{#str}} learningpaths, block_aicourserecommender {{/str}}</caption>
+        <thead>
+            <tr>
+                <th scope="col">{{#str}} order, block_aicourserecommender {{/str}}</th>
+                <th scope="col">{{#str}} pathname, block_aicourserecommender {{/str}}</th>
+                <th scope="col">{{#str}} pathcoursesnumber, block_aicourserecommender {{/str}}</th>
+                <th scope="col">{{#str}} visible {{/str}}</th>
+                <th scope="col">{{#str}} actions {{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#paths}}
+            <tr class="{{^visible}}dimmed_text{{/visible}}">
+                <td class="text-nowrap">
+                    {{#upurl}}<a href="{{upurl}}" title="{{#str}} moveup {{/str}}">{{#pix}} t/up, core, {{#str}} moveup {{/str}} {{/pix}}</a>{{/upurl}}
+                    {{#downurl}}<a href="{{downurl}}" title="{{#str}} movedown {{/str}}">{{#pix}} t/down, core, {{#str}} movedown {{/str}} {{/pix}}</a>{{/downurl}}
+                </td>
+                <td><a href="{{viewurl}}">{{name}}</a></td>
+                <td>{{coursecount}}</td>
+                <td>{{#visible}}{{#str}} yes {{/str}}{{/visible}}{{^visible}}{{#str}} no {{/str}}{{/visible}}</td>
+                <td class="text-nowrap">
+                    <a href="{{editurl}}">{{#pix}} t/edit, core, {{#str}} edit {{/str}} {{/pix}}</a>
+                    {{#visible}}<a href="{{hideurl}}">{{#pix}} t/hide, core, {{#str}} hide {{/str}} {{/pix}}</a>{{/visible}}
+                    {{^visible}}<a href="{{showurl}}">{{#pix}} t/show, core, {{#str}} show {{/str}} {{/pix}}</a>{{/visible}}
+                    <a href="{{deleteurl}}">{{#pix}} t/delete, core, {{#str}} delete {{/str}} {{/pix}}</a>
+                </td>
+            </tr>
+            {{/paths}}
+        </tbody>
+    </table>
+    {{/haspaths}}
+    {{^haspaths}}
+    <p>{{#str}} nopaths, block_aicourserecommender {{/str}}</p>
+    {{/haspaths}}
+</div>
