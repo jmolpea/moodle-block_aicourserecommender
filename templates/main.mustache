@@ -1,0 +1,162 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_aicourserecommender/main
+
+    Main content of the AI course recommender block. Each state is a region; JavaScript switches between them.
+
+    Context variables required for this template:
+    * uniqid - Unique id of the container
+    * state - Initial state: consent, aipolicy, questionnaire or loading
+    * isconsent, isaipolicy, isquestionnaire, isloading - Initial state flags
+    * policyaccepted - Whether the AI policy of the site is accepted
+    * hasanswers - Whether the user has saved answers
+    * consenttext - Privacy notice (HTML)
+    * questions - Active questions
+    * maxlength - Maximum answer length
+    * speechlang - BCP 47 language for dictation
+    * catalogurl - Course catalogue URL
+
+    Example context (json):
+    {
+        "uniqid": "aicr123",
+        "state": "questionnaire",
+        "isconsent": false,
+        "isaipolicy": false,
+        "isquestionnaire": true,
+        "isloading": false,
+        "policyaccepted": true,
+        "hasanswers": false,
+        "consenttext": "<p>We use AI to recommend courses.</p>",
+        "questions": [
+            {"slot": 1, "text": "What is your role?", "help": "For example: teacher", "hashelp": true, "answer": ""}
+        ],
+        "maxlength": 1000,
+        "speechlang": "en",
+        "catalogurl": "https://example.com/course/index.php"
+    }
+}}
+<div class="block-aicourserecommender" id="{{uniqid}}" data-region="aicr-root" data-state="{{state}}"
+    data-policyaccepted="{{#policyaccepted}}1{{/policyaccepted}}{{^policyaccepted}}0{{/policyaccepted}}"
+    data-hasanswers="{{#hasanswers}}1{{/hasanswers}}{{^hasanswers}}0{{/hasanswers}}"
+    data-speechlang="{{speechlang}}">
+    <div class="sr-only visually-hidden" aria-live="polite" aria-atomic="true" data-region="live"></div>
+
+    <section data-region="consent" aria-labelledby="{{uniqid}}-consent-title" {{^isconsent}}hidden{{/isconsent}}>
+        <h3 id="{{uniqid}}-consent-title" class="h6">{{#str}} consenttitle, block_aicourserecommender {{/str}}</h3>
+        <div class="aicr-consent-text small">{{{consenttext}}}</div>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="{{uniqid}}-consent" data-region="consent-checkbox">
+            <label class="form-check-label" for="{{uniqid}}-consent">
+                {{#str}} consentaccept, block_aicourserecommender {{/str}}
+            </label>
+        </div>
+        <button type="button" class="btn btn-primary" data-action="start" disabled>
+            {{#str}} start, block_aicourserecommender {{/str}}
+        </button>
+    </section>
+
+    <section data-region="aipolicy" aria-labelledby="{{uniqid}}-policy-title" {{^isaipolicy}}hidden{{/isaipolicy}}>
+        <h3 id="{{uniqid}}-policy-title" class="h6">{{#str}} aiusagepolicy, core_ai {{/str}}</h3>
+        <div class="aicr-policy-text small">{{#str}} userpolicy, core_ai {{/str}}</div>
+        <div class="aicr-buttons mt-2">
+            <button type="button" class="btn btn-secondary" data-action="decline-policy">
+                {{#str}} declineaipolicy, core_ai {{/str}}
+            </button>
+            <button type="button" class="btn btn-primary" data-action="accept-policy">
+                {{#str}} acceptai, core_ai {{/str}}
+            </button>
+        </div>
+        <p class="small text-muted mt-2" data-region="policy-declined" hidden>
+            {{#str}} policydeclined, block_aicourserecommender {{/str}}
+        </p>
+    </section>
+
+    <section data-region="questionnaire" aria-labelledby="{{uniqid}}-q-title" {{^isquestionnaire}}hidden{{/isquestionnaire}}>
+        <h3 id="{{uniqid}}-q-title" class="h6">{{#str}} questionnairetitle, block_aicourserecommender {{/str}}</h3>
+        <p class="small text-muted">{{#str}} questionnaireintro, block_aicourserecommender {{/str}}</p>
+        <form data-region="questionnaire-form" novalidate>
+            {{#questions}}
+            <div class="aicr-question mb-3">
+                <label for="{{uniqid}}-q{{slot}}" class="aicr-question-label">{{{text}}}</label>
+                {{#hashelp}}
+                <div id="{{uniqid}}-q{{slot}}-help" class="aicr-question-help small text-muted mb-1">{{{help}}}</div>
+                {{/hashelp}}
+                <textarea class="form-control" id="{{uniqid}}-q{{slot}}" name="q{{slot}}" data-slot="{{slot}}"
+                    rows="3" maxlength="{{maxlength}}"
+                    aria-describedby="{{#hashelp}}{{uniqid}}-q{{slot}}-help {{/hashelp}}{{uniqid}}-q{{slot}}-count">{{answer}}</textarea>
+                <div class="aicr-answer-tools">
+                    <button type="button" class="btn btn-sm btn-outline-secondary aicr-mic" data-action="dictate"
+                        data-target="{{uniqid}}-q{{slot}}" aria-pressed="false" hidden>
+                        <svg class="aicr-mic-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
+                            <path fill="currentColor" d="M8 10a2.5 2.5 0 0 0 2.5-2.5v-4a2.5 2.5 0 0 0-5 0v4A2.5 2.5 0 0 0 8 10zm4-2.5
+                                a.5.5 0 0 1 1 0A5 5 0 0 1 8.5 12.47V14h2a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1h2v-1.53A5 5 0 0 1 3 7.5
+                                a.5.5 0 0 1 1 0 4 4 0 0 0 8 0z"/>
+                        </svg>
+                        <span data-region="mic-label">{{#str}} dictate, block_aicourserecommender {{/str}}</span>
+                    </button>
+                    <span class="small text-muted aicr-counter" id="{{uniqid}}-q{{slot}}-count" data-region="counter"
+                        data-max="{{maxlength}}"></span>
+                </div>
+            </div>
+            {{/questions}}
+            <div class="alert alert-danger" role="alert" tabindex="-1" data-region="form-error" hidden></div>
+            <div class="aicr-buttons">
+                <button type="submit" class="btn btn-primary" data-action="save-answers">
+                    {{#str}} saveanswers, block_aicourserecommender {{/str}}
+                </button>
+                <button type="button" class="btn btn-link" data-action="cancel-edit" {{^hasanswers}}hidden{{/hasanswers}}>
+                    {{#str}} cancel {{/str}}
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <div data-region="loading" aria-busy="true" {{^isloading}}hidden{{/isloading}}>
+        <p class="small text-muted">{{#str}} loading, block_aicourserecommender {{/str}}</p>
+        <div class="aicr-grid" aria-hidden="true">
+            <div class="aicr-skeleton"><div class="aicr-skeleton-img"></div><div class="aicr-skeleton-line"></div>
+                <div class="aicr-skeleton-line aicr-short"></div></div>
+            <div class="aicr-skeleton"><div class="aicr-skeleton-img"></div><div class="aicr-skeleton-line"></div>
+                <div class="aicr-skeleton-line aicr-short"></div></div>
+        </div>
+    </div>
+
+    <div data-region="results" hidden></div>
+
+    <div data-region="noresults" hidden>
+        <p>{{#str}} noresults, block_aicourserecommender {{/str}}</p>
+        <div class="aicr-buttons">
+            <a class="btn btn-secondary" href="{{catalogurl}}">{{#str}} browsecatalog, block_aicourserecommender {{/str}}</a>
+            <button type="button" class="btn btn-link" data-action="change-interests">
+                {{#str}} changeinterests, block_aicourserecommender {{/str}}
+            </button>
+        </div>
+    </div>
+
+    <div data-region="error" hidden>
+        <div class="alert alert-warning" role="alert" data-region="error-message"></div>
+        <div class="aicr-buttons">
+            <button type="button" class="btn btn-secondary" data-action="retry">
+                {{#str}} retry, block_aicourserecommender {{/str}}
+            </button>
+            <button type="button" class="btn btn-link" data-action="change-interests">
+                {{#str}} changeinterests, block_aicourserecommender {{/str}}
+            </button>
+        </div>
+    </div>
+</div>

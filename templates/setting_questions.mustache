@@ -1,0 +1,66 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_aicourserecommender/setting_questions
+
+    Editor of the questionnaire questions in the plugin settings.
+
+    Context variables required for this template:
+    * questions - slot, idprefix, nameprefix, text, help, enabled, orderoptions, hasdefault, defaulttext
+
+    Example context (json):
+    {
+        "questions": [{
+            "slot": 1, "idprefix": "id_s_questions_1", "nameprefix": "s_questions[1]", "text": "", "help": "",
+            "enabled": true, "hasdefault": true, "defaulttext": "What is your role?",
+            "orderoptions": [{"value": 1, "label": 1, "selected": true}, {"value": 2, "label": 2, "selected": false}]
+        }]
+    }
+}}
+<div class="aicr-setting-questions">
+    {{#questions}}
+    <fieldset class="border rounded p-2 mb-3">
+        <legend class="h6 w-auto px-1 mb-1">{{#str}} questionnumber, block_aicourserecommender, {{slot}} {{/str}}</legend>
+        <div class="form-check mb-2">
+            <input type="hidden" name="{{nameprefix}}[enabled]" value="0">
+            <input type="checkbox" class="form-check-input" id="{{idprefix}}_enabled" name="{{nameprefix}}[enabled]" value="1"
+                {{#enabled}}checked{{/enabled}}>
+            <label class="form-check-label" for="{{idprefix}}_enabled">{{#str}} questionenabled, block_aicourserecommender {{/str}}</label>
+        </div>
+        <div class="mb-2">
+            <label for="{{idprefix}}_text">{{#str}} questiontext, block_aicourserecommender {{/str}}</label>
+            <input type="text" class="form-control" id="{{idprefix}}_text" name="{{nameprefix}}[text]" value="{{text}}"
+                {{#hasdefault}}placeholder="{{defaulttext}}" aria-describedby="{{idprefix}}_default"{{/hasdefault}}>
+            {{#hasdefault}}
+            <div class="small text-muted" id="{{idprefix}}_default">{{#str}} questiondefault, block_aicourserecommender {{/str}}</div>
+            {{/hasdefault}}
+        </div>
+        <div class="mb-2">
+            <label for="{{idprefix}}_help">{{#str}} questionhelp, block_aicourserecommender {{/str}}</label>
+            <textarea class="form-control" rows="2" id="{{idprefix}}_help" name="{{nameprefix}}[help]">{{help}}</textarea>
+        </div>
+        <div>
+            <label for="{{idprefix}}_sortorder">{{#str}} order, block_aicourserecommender {{/str}}</label>
+            <select class="custom-select form-select w-auto" id="{{idprefix}}_sortorder" name="{{nameprefix}}[sortorder]">
+                {{#orderoptions}}
+                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                {{/orderoptions}}
+            </select>
+        </div>
+    </fieldset>
+    {{/questions}}
+</div>
