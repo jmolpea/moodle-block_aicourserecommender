@@ -1,0 +1,302 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * Portuguese strings of block_aicourserecommender.
+ *
+ * @package    block_aicourserecommender
+ * @copyright  2026 Pluginia <https://pluginia.es>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['addpath'] = 'Adicionar percurso de aprendizagem';
+$string['aicourserecommender:addinstance'] = 'Adicionar um bloco Recomendador de cursos com IA';
+$string['aicourserecommender:managepaths'] = 'Gerir os percursos de aprendizagem do recomendador';
+$string['aicourserecommender:myaddinstance'] = 'Adicionar um bloco Recomendador de cursos com IA à Área pessoal';
+$string['aicourserecommender:use'] = 'Receber recomendações de cursos com IA';
+$string['aicourserecommender:viewreports'] = 'Ver o relatório do recomendador de cursos com IA';
+$string['aiimagepreview'] = 'Pré-visualização da imagem gerada';
+$string['aiimagewillreplace'] = 'Esta imagem gerada com IA substituirá a imagem atual quando guardar o percurso.';
+$string['aipreview'] = 'Pré-visualização da descrição gerada';
+$string['aistatus'] = 'Fornecedores de IA';
+$string['aistatus_imageno'] = 'Geração de imagens: nenhum fornecedor ativo a oferece. O botão «Gerar imagem com IA» não é mostrado.';
+$string['aistatus_imageyes'] = 'Geração de imagens: disponível.';
+$string['aistatus_link'] = 'Configurar fornecedores de IA';
+$string['aistatus_textno'] = 'Geração de texto: nenhum fornecedor ativo a oferece. O bloco não é mostrado aos utilizadores até que um seja configurado.';
+$string['aistatus_textyes'] = 'Geração de texto: disponível.';
+$string['apply'] = 'Aplicar';
+$string['baseprompt'] = 'Prompt base';
+$string['baseprompt_desc'] = 'Instruções fixas enviadas em cada pedido de ranking (versão {$a}). Não podem ser editadas; use o prompt institucional para ajustar o tom e as prioridades. Os dados do utilizador, os candidatos e o formato de saída são adicionados automaticamente.';
+$string['browsecatalog'] = 'Ver o catálogo de cursos';
+$string['cachettl'] = 'Duração da cache do ranking';
+$string['cachettl_desc'] = 'Tempo durante o qual o ranking de um utilizador é reutilizado antes de voltar a perguntar à IA. Alterar as respostas ou o aparecimento de novos cursos candidatos também o renova.';
+$string['calltype_description'] = 'Descrição de percurso';
+$string['calltype_image'] = 'Imagem de percurso';
+$string['calltype_incremental'] = 'Ranking de cursos novos';
+$string['calltype_ranking'] = 'Ranking';
+$string['calltype_summary'] = 'Resumo de curso';
+$string['categories'] = 'Categorias';
+$string['categories_desc'] = 'Só são recomendados cursos destas categorias e das suas subcategorias.';
+$string['categoryfilter'] = 'Filtrar por categoria';
+$string['categoryfilter_desc'] = 'Limita as recomendações a algumas categorias de cursos.';
+$string['changeinterests'] = 'Alterar os meus interesses';
+$string['charcount'] = '{$a->count} / {$a->max} caracteres';
+$string['configureai'] = 'Configurar fornecedores de IA';
+$string['confirmdeletepath'] = 'Apagar o percurso de aprendizagem «{$a}»? As suas avaliações e estatísticas também serão apagadas.';
+$string['consentaccept'] = 'Li o aviso e quero receber recomendações personalizadas';
+$string['consenttext'] = 'Aviso de privacidade';
+$string['consenttext_desc'] = 'Texto mostrado antes da primeira utilização. Deixe vazio para usar o texto predefinido: <br><em>{$a}</em>';
+$string['consenttextdefault'] = '<p>Para lhe recomendar cursos e percursos de aprendizagem, este site envia ao serviço de inteligência artificial configurado alguns dados do seu perfil (por exemplo cidade, país, instituição, departamento, interesses e descrição) e as suas respostas às perguntas. O seu nome, email, nome de utilizador e outros identificadores nunca são enviados.</p><p>Guardamos as suas respostas e avaliações para melhorar as suas recomendações. Pode alterar as suas respostas quando quiser.</p><p>Se usar o ditado por voz, o reconhecimento é feito pelo seu navegador; alguns navegadores enviam o áudio ao seu fabricante para o transcrever.</p>';
+$string['consenttitle'] = 'Recomendações personalizadas';
+$string['course'] = 'Curso';
+$string['coursemoved'] = '{$a->name} movido para a posição {$a->position}.';
+$string['coursesforyou'] = 'Cursos para si';
+$string['customprofilefields'] = 'Campos personalizados do perfil';
+$string['customprofilefields_desc'] = 'Campos personalizados do perfil do utilizador enviados à IA. Por predefinição nenhum é enviado.';
+$string['dailylimit'] = 'Pedidos à IA por utilizador e dia';
+$string['dailylimit_desc'] = 'Número máximo de pedidos de ranking que um utilizador pode gerar por dia. Quando é atingido, é mostrado o último ranking com um aviso. Os pedidos das tarefas agendadas não contam.';
+$string['dictate'] = 'Ditar';
+$string['dictatelistening'] = 'A ouvir. Fale agora.';
+$string['dictatestop'] = 'Parar';
+$string['editpath'] = 'Editar percurso de aprendizagem';
+$string['endson'] = 'Termina a {$a}';
+$string['enrolconfirm'] = 'Quer inscrever-se em «{$a}»?';
+$string['enrolconfirmtitle'] = 'Inscrever-me no curso';
+$string['enrolme'] = 'Inscrever-me';
+$string['enrolmethods'] = 'Métodos de inscrição';
+$string['enrolmethods_desc'] = 'Um curso é candidato se tiver uma instância aberta de algum destes métodos. Só a autoinscrição sem chave permite a inscrição direta a partir do bloco; os cursos com outros métodos ligam à página do curso.';
+$string['enrolpath'] = 'Inscrever-me em todo o percurso';
+$string['enrolpathconfirm'] = 'Inscrever-me';
+$string['enrolpathsummary'] = 'Será inscrito em {$a->count} curso(s). {$a->unavailable} curso(s) não estão disponíveis agora.';
+$string['enrolresult_already'] = 'Já estava inscrito';
+$string['enrolresult_enrolled'] = 'Inscrito';
+$string['enrolresult_unavailable'] = 'Não disponível agora';
+$string['enrolresults'] = 'Resultado da inscrição';
+$string['erroraifailed'] = 'Neste momento não conseguimos obter recomendações. Tente novamente dentro de alguns minutos.';
+$string['errorconsentrequired'] = 'Primeiro tem de aceitar o aviso de privacidade.';
+$string['errordaterange'] = 'A data de fim tem de ser posterior à data de início.';
+$string['erroremptyanswers'] = 'Responda a pelo menos uma pergunta.';
+$string['errorenrol'] = 'Não foi possível concluir a sua inscrição neste curso. Abra a página do curso para ver as opções de inscrição.';
+$string['errorhiddencourse'] = 'Só podem ser adicionados cursos visíveis a um percurso de aprendizagem.';
+$string['errorlimitnoranking'] = 'Atingiu o limite diário de pedidos de recomendações. Tente novamente amanhã.';
+$string['errornoactivequestion'] = 'Tem de haver pelo menos uma pergunta ativa.';
+$string['errornoai'] = 'Não há nenhum fornecedor de IA disponível para gerar texto.';
+$string['errornocourses'] = 'Selecione pelo menos um curso.';
+$string['errornoimageai'] = 'Não há nenhum fornecedor de IA disponível para gerar imagens.';
+$string['errorpathnotfound'] = 'Este percurso de aprendizagem não existe ou não está disponível.';
+$string['errorquestionnotext'] = 'A pergunta {$a} está ativa mas não tem texto.';
+$string['event_course_enrolled_from_recommendation'] = 'Inscrição num curso a partir de uma recomendação';
+$string['event_interests_updated'] = 'Interesses de aprendizagem atualizados';
+$string['event_path_enrolled'] = 'Inscrição num percurso de aprendizagem';
+$string['event_path_viewed'] = 'Percurso de aprendizagem visto';
+$string['event_recommendation_clicked'] = 'Clique numa recomendação';
+$string['event_recommendation_rated'] = 'Recomendação avaliada';
+$string['event_recommendations_viewed'] = 'Recomendações vistas';
+$string['excludefield'] = 'Campo de exclusão';
+$string['excludefield_desc'] = 'Campo personalizado de curso do tipo caixa de verificação que significa «Não recomendar». Os cursos que o tenham marcado nunca são recomendados.';
+$string['generatedescription'] = 'Gerar descrição com IA';
+$string['generateimage'] = 'Gerar imagem com IA';
+$string['generating'] = 'A gerar… pode demorar alguns segundos.';
+$string['includehiddenfields'] = 'Enviar campos de curso não públicos';
+$string['includehiddenfields_desc'] = 'Por predefinição só são enviados à IA os campos personalizados de curso visíveis para todos. Ative esta opção para enviar também os visíveis apenas para professores ou para ninguém. Os seus valores poderão aparecer nas explicações mostradas aos utilizadores.';
+$string['institutionprompt'] = 'Prompt institucional';
+$string['institutionprompt_desc'] = 'Instruções opcionais sobre tom, estilo e prioridades, por exemplo «Use um tom próximo e destaque os cursos certificados». Não podem alterar as regras nem o formato de saída. Variáveis disponíveis: {sitename}, {userlang}, {maxresults}, {today}.';
+$string['learningpath'] = 'Percurso de aprendizagem';
+$string['learningpaths'] = 'Percursos de aprendizagem';
+$string['limitreached'] = 'Atingiu o limite de hoje de novas recomendações. Estas são as suas últimas recomendações.';
+$string['loading'] = 'A procurar os melhores cursos para si…';
+$string['managepaths'] = 'Gerir percursos de aprendizagem';
+$string['maxcoursesperprompt'] = 'Máximo de cursos por pedido';
+$string['maxcoursesperprompt_desc'] = 'Se houver mais cursos candidatos, uma correspondência local de palavras entre os dados do utilizador e os cursos seleciona os melhores antes de chamar a IA.';
+$string['maxpathresults'] = 'Percursos mostrados';
+$string['maxpathresults_desc'] = 'Número de percursos de aprendizagem mostrados de cada vez.';
+$string['maxpaths'] = 'Percursos no ranking';
+$string['maxpaths_desc'] = 'Número máximo de percursos de aprendizagem que a IA ordena num pedido.';
+$string['maxranked'] = 'Cursos no ranking';
+$string['maxranked_desc'] = 'Número máximo de cursos que a IA ordena num pedido. «Ver mais» percorre-os sem novos pedidos.';
+$string['maxresults'] = 'Cursos mostrados';
+$string['maxresults_desc'] = 'Número de cursos mostrados de cada vez.';
+$string['messageprovider:newcourse'] = 'Cursos novos que correspondem aos seus interesses';
+$string['moreloaded'] = 'Mais {$a} recomendações carregadas.';
+$string['movedown_a'] = 'Descer {$a}';
+$string['moveup_a'] = 'Subir {$a}';
+$string['negativedays'] = 'Dias ocultos após um polegar para baixo';
+$string['negativedays_desc'] = 'Os elementos avaliados como não úteis não voltam a ser recomendados a esse utilizador durante este número de dias.';
+$string['nextedition'] = 'a próxima edição começa a {$a}';
+$string['nopaths'] = 'Ainda não há percursos de aprendizagem.';
+$string['noprovideradmin'] = 'O recomendador de cursos com IA precisa de um fornecedor de IA com a geração de texto ativada. Só os administradores veem esta mensagem.';
+$string['noresults'] = 'Neste momento não há cursos disponíveis que correspondam aos seus interesses. Pode ver o catálogo ou alterar os seus interesses.';
+$string['notificationbody'] = 'Há um curso novo que corresponde aos seus interesses: {$a->name}
+
+{$a->reason}
+
+{$a->url}';
+$string['notificationbodyhtml'] = '<p>Há um curso novo que corresponde aos seus interesses: <a href="{$a->url}">{$a->name}</a></p><p>{$a->reason}</p>';
+$string['notificationsubject'] = 'Há um curso novo que corresponde aos seus interesses: {$a}';
+$string['notifyactivedays'] = 'Atividade do utilizador (dias)';
+$string['notifyactivedays_desc'] = 'Só se procuram cursos novos para os utilizadores que acederam ao site nos últimos dias.';
+$string['notifyenabled'] = 'Avisar de cursos novos';
+$string['notifyenabled_desc'] = 'Envia uma notificação quando um curso candidato novo atinge o limiar de relevância para um utilizador.';
+$string['notifymaxusers'] = 'Utilizadores por execução';
+$string['notifymaxusers_desc'] = 'Número máximo de utilizadores verificados em cada execução da tarefa diária, para controlar o custo. Os restantes são verificados nas execuções seguintes.';
+$string['notifythreshold'] = 'Limiar de relevância para notificações';
+$string['notifythreshold_desc'] = 'Pontuação de 0 a 100 que um curso novo tem de atingir para avisar o utilizador.';
+$string['order'] = 'Ordem';
+$string['path'] = 'Percurso de aprendizagem';
+$string['pathcoursecount'] = '{$a} cursos';
+$string['pathcoursecountone'] = '1 curso';
+$string['pathcourseorder'] = 'Ordem dos cursos';
+$string['pathcourseorder_empty'] = 'Selecione os cursos acima. Depois poderá alterar a sua ordem aqui.';
+$string['pathcourses'] = 'Cursos';
+$string['pathcourses_help'] = 'Cursos do percurso. Também pode adicionar cursos sem inscrição aberta; aparecerão como não disponíveis agora.';
+$string['pathcoursesnumber'] = 'Número de cursos';
+$string['pathdeleted'] = 'Percurso de aprendizagem apagado.';
+$string['pathdescription'] = 'Descrição';
+$string['pathimage'] = 'Imagem';
+$string['pathname'] = 'Título';
+$string['pathname_help'] = 'Título do percurso de aprendizagem. Aceita etiquetas multilang.';
+$string['pathnocourses'] = 'Este percurso de aprendizagem não tem cursos disponíveis para si.';
+$string['pathprogress'] = '{$a->completed} de {$a->total} cursos concluídos';
+$string['paths'] = 'Percursos de aprendizagem';
+$string['pathsaved'] = 'Percurso de aprendizagem guardado.';
+$string['pathsforyou'] = 'Percursos de aprendizagem para si';
+$string['pluginname'] = 'Recomendador de cursos com IA';
+$string['policydeclined'] = 'As recomendações usam IA, por isso só estão disponíveis depois de aceitar a política de utilização da IA.';
+$string['privacy:activity'] = 'Atividade';
+$string['privacy:ailog'] = 'Pedidos à IA';
+$string['privacy:answers'] = 'Respostas';
+$string['privacy:feedback'] = 'Avaliações';
+$string['privacy:history'] = 'Histórico de respostas';
+$string['privacy:metadata:activity'] = 'Recomendações mostradas ao utilizador, clicadas ou usadas para se inscrever.';
+$string['privacy:metadata:activity:action'] = 'Ação: mostrada, clique ou inscrição.';
+$string['privacy:metadata:activity:position'] = 'Posição do elemento no ranking.';
+$string['privacy:metadata:ailog'] = 'Registo dos pedidos à IA feitos para o utilizador.';
+$string['privacy:metadata:ailog:calltype'] = 'Tipo de pedido.';
+$string['privacy:metadata:ailog:duration'] = 'Duração do pedido.';
+$string['privacy:metadata:ailog:success'] = 'Se o pedido teve sucesso.';
+$string['privacy:metadata:ailog:tokens'] = 'Tokens usados, se o fornecedor os indicar.';
+$string['privacy:metadata:answerhist'] = 'Versões anteriores das respostas do utilizador.';
+$string['privacy:metadata:answers'] = 'Últimas respostas do utilizador ao questionário e consentimento.';
+$string['privacy:metadata:answers:answers'] = 'Respostas às perguntas.';
+$string['privacy:metadata:answers:consent'] = 'Se o utilizador aceitou o aviso de privacidade.';
+$string['privacy:metadata:answers:timeconsent'] = 'Quando o utilizador aceitou o aviso de privacidade.';
+$string['privacy:metadata:answers:userid'] = 'O utilizador.';
+$string['privacy:metadata:core_ai'] = 'São enviados ao subsistema de IA dados do perfil (nunca nomes nem identificadores), as respostas ao questionário e as avaliações negativas recentes para gerar as recomendações.';
+$string['privacy:metadata:core_message'] = 'Notificações sobre cursos novos que correspondem aos interesses do utilizador.';
+$string['privacy:metadata:feedback'] = 'Avaliações de recomendações feitas pelo utilizador.';
+$string['privacy:metadata:feedback:rating'] = 'Avaliação: útil ou não útil.';
+$string['privacy:metadata:feedback:reason'] = 'Porque é que o elemento não lhe serve, se o indicou.';
+$string['privacy:metadata:itemid'] = 'Id do curso ou do percurso de aprendizagem.';
+$string['privacy:metadata:itemtype'] = 'Curso ou percurso de aprendizagem.';
+$string['privacy:metadata:paths'] = 'Percursos de aprendizagem.';
+$string['privacy:metadata:paths:usermodified'] = 'O utilizador que modificou o percurso pela última vez.';
+$string['privacy:metadata:ranking'] = 'O último ranking de cursos e percursos gerado para o utilizador.';
+$string['privacy:metadata:ranking:courses'] = 'Cursos ordenados com pontuação e explicação.';
+$string['privacy:metadata:ranking:lang'] = 'Idioma do ranking.';
+$string['privacy:metadata:ranking:paths'] = 'Percursos ordenados com pontuação e explicação.';
+$string['privacy:metadata:ranking:timeexpires'] = 'Quando o ranking expira.';
+$string['privacy:metadata:timecreated'] = 'Data de criação.';
+$string['privacy:metadata:timemodified'] = 'Data de modificação.';
+$string['privacy:ranking'] = 'Ranking';
+$string['profilefield_city'] = 'Cidade';
+$string['profilefield_country'] = 'País';
+$string['profilefield_department'] = 'Departamento';
+$string['profilefield_description'] = 'Descrição do perfil';
+$string['profilefield_institution'] = 'Instituição';
+$string['profilefield_interests'] = 'Interesses (etiquetas do perfil)';
+$string['profilefields'] = 'Campos padrão do perfil';
+$string['profilefields_desc'] = 'Campos padrão do perfil enviados à IA. O idioma atual do utilizador é sempre enviado.';
+$string['progresspercent'] = '{$a}% concluído';
+$string['question1'] = 'Qual é a sua função profissional atual e em que setor ou tipo de organização trabalha?';
+$string['question1help'] = 'Por exemplo: professora do ensino básico numa escola pública, ou gestor de projetos numa empresa de engenharia.';
+$string['question2'] = 'O que quer alcançar com a sua formação nos próximos meses? Por exemplo: melhorar no seu posto atual, mudar de área, liderar um projeto concreto ou obter uma certificação.';
+$string['question2help'] = 'Conte-nos o seu objetivo principal. Quanto mais concreto, melhores serão as recomendações.';
+$string['question3'] = 'Que temas ou competências concretas quer aprender ou reforçar, e qual é o seu nível neles?';
+$string['question3help'] = 'Por exemplo: análise de dados (básico), falar em público (intermédio).';
+$string['question4'] = 'Quanto tempo pode dedicar por semana e como prefere aprender? Por exemplo: ao seu ritmo, com tutor, com sessões ao vivo ou com datas fixas.';
+$string['question4help'] = 'Por exemplo: 3 horas por semana, ao meu ritmo, de preferência com certificado.';
+$string['questiondefault'] = 'Deixe vazio para usar a pergunta predefinida, traduzida para cada idioma.';
+$string['questionenabled'] = 'Ativa';
+$string['questionhelp'] = 'Texto de ajuda (opcional)';
+$string['questionnaireintro'] = 'Responda com as suas palavras. Pode usar o microfone para ditar.';
+$string['questionnairetitle'] = 'Fale-nos de si';
+$string['questionnumber'] = 'Pergunta {$a}';
+$string['questions'] = 'Perguntas';
+$string['questions_desc'] = 'Até seis perguntas. Os textos aceitam etiquetas multilang. Tem de haver pelo menos uma pergunta ativa. As respostas têm um máximo de 1000 caracteres.';
+$string['questiontext'] = 'Texto da pergunta';
+$string['rateitem'] = 'Avalie esta recomendação';
+$string['ratenotuseful'] = 'Não me serve';
+$string['rateuseful'] = 'Útil';
+$string['ratingsaved'] = 'Obrigado pela sua avaliação.';
+$string['reasonsaved'] = 'Obrigado, vamos tê-lo em conta.';
+$string['refreshprogress'] = 'Atualize a página para ver o seu progresso';
+$string['report'] = 'Relatório do recomendador de cursos com IA';
+$string['report_aicalls'] = 'Pedidos à IA';
+$string['report_aierrors'] = 'Erros da IA';
+$string['report_ailog'] = 'Pedidos à IA';
+$string['report_calltype'] = 'Tipo';
+$string['report_clicks'] = 'Cliques';
+$string['report_ctr'] = 'Taxa de cliques (CTR)';
+$string['report_duration'] = 'Duração (s)';
+$string['report_enrolments'] = 'Inscrições';
+$string['report_negative'] = 'Não útil';
+$string['report_positive'] = 'Útil';
+$string['report_shown'] = 'Vezes mostrado';
+$string['report_success'] = 'Sucesso';
+$string['report_tokens'] = 'Tokens';
+$string['report_topcourses'] = 'Cursos mais recomendados';
+$string['report_toppaths'] = 'Percursos de aprendizagem mais recomendados';
+$string['report_users'] = 'Utilizadores que guardaram respostas';
+$string['requireconsent'] = 'Pedir consentimento';
+$string['requireconsent_desc'] = 'Mostra o aviso de privacidade e pede a sua aceitação antes da primeira utilização.';
+$string['resultsloaded'] = 'Recomendações carregadas: {$a->courses} cursos e {$a->paths} percursos de aprendizagem.';
+$string['retry'] = 'Tentar novamente';
+$string['saveanswers'] = 'Ver as minhas recomendações';
+$string['seemorecourses'] = 'Ver mais cursos';
+$string['seemorepaths'] = 'Ver mais percursos de aprendizagem';
+$string['send'] = 'Enviar';
+$string['settings'] = 'Configurações';
+$string['settings_ai'] = 'Inteligência artificial';
+$string['settings_catalog'] = 'Catálogo';
+$string['settings_notifications'] = 'Notificações';
+$string['settings_paths'] = 'Percursos de aprendizagem';
+$string['settings_privacy'] = 'Privacidade';
+$string['settings_profile'] = 'Dados do perfil';
+$string['settings_profile_desc'] = 'Nunca são enviados o nome, o email, o nome de utilizador, o número de ID, o telefone, a morada, o IP nem qualquer identificador.';
+$string['settings_questions'] = 'Perguntas';
+$string['settings_results'] = 'Resultados';
+$string['showpaths'] = 'Recomendar percursos de aprendizagem';
+$string['showpaths_desc'] = 'Mostra uma secção com percursos de aprendizagem recomendados.';
+$string['start'] = 'Começar';
+$string['startson'] = 'Começa a {$a}';
+$string['status_available'] = 'Disponível';
+$string['status_completed'] = 'Concluído';
+$string['status_inprogress'] = 'Em curso';
+$string['status_unavailable'] = 'Não disponível agora';
+$string['stepnumber'] = 'Passo {$a}:';
+$string['summariesperrun'] = 'Resumos de curso por execução';
+$string['summariesperrun_desc'] = 'Número máximo de resumos de curso gerados com IA em cada execução da tarefa horária. Os resumos só são gerados de novo quando os dados do curso mudam.';
+$string['taskgeneratesummaries'] = 'Gerar resumos de curso com IA';
+$string['tasknotifynewcourses'] = 'Ordenar cursos novos e avisar os utilizadores';
+$string['taskrefreshsummaries'] = 'Atualizar resumos de curso após alterar um campo personalizado';
+$string['taskupdatecoursesummary'] = 'Atualizar o resumo com IA de um curso';
+$string['viewcourse'] = 'Ver curso';
+$string['viewpath'] = 'Ver percurso';
+$string['whynotfit'] = 'Porque é que não lhe serve? (opcional)';
+$string['whyrecommended'] = 'Porque o recomendamos:';
+$string['yourprogress'] = 'O seu progresso';

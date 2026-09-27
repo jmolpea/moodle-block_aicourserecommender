@@ -1,0 +1,302 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * English strings of block_aicourserecommender.
+ *
+ * @package    block_aicourserecommender
+ * @copyright  2026 Pluginia <https://pluginia.es>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['addpath'] = 'Add learning path';
+$string['aicourserecommender:addinstance'] = 'Add a new AI course recommender block';
+$string['aicourserecommender:managepaths'] = 'Manage learning paths of the AI course recommender';
+$string['aicourserecommender:myaddinstance'] = 'Add a new AI course recommender block to the Dashboard';
+$string['aicourserecommender:use'] = 'Get AI course recommendations';
+$string['aicourserecommender:viewreports'] = 'View the AI course recommender report';
+$string['aiimagepreview'] = 'Preview of the generated image';
+$string['aiimagewillreplace'] = 'This AI generated image will replace the current image when you save the path.';
+$string['aipreview'] = 'Preview of the generated description';
+$string['aistatus'] = 'AI providers';
+$string['aistatus_imageno'] = 'Image generation: no enabled provider offers it. The "Generate image with AI" button is hidden.';
+$string['aistatus_imageyes'] = 'Image generation: available.';
+$string['aistatus_link'] = 'Configure AI providers';
+$string['aistatus_textno'] = 'Text generation: no enabled provider offers it. The block is hidden from learners until one is configured.';
+$string['aistatus_textyes'] = 'Text generation: available.';
+$string['apply'] = 'Apply';
+$string['baseprompt'] = 'Base prompt';
+$string['baseprompt_desc'] = 'Fixed instructions sent in every ranking request (version {$a}). They cannot be edited; use the institution prompt to adjust tone and priorities. Learner data, candidates and the output format are added automatically.';
+$string['browsecatalog'] = 'Browse the course catalogue';
+$string['cachettl'] = 'Ranking cache lifetime';
+$string['cachettl_desc'] = 'How long a learner\'s ranking is reused before the AI is asked again. Changing the answers or the appearance of new candidate courses also refreshes it.';
+$string['calltype_description'] = 'Path description';
+$string['calltype_image'] = 'Path image';
+$string['calltype_incremental'] = 'New courses ranking';
+$string['calltype_ranking'] = 'Ranking';
+$string['calltype_summary'] = 'Course summary';
+$string['categories'] = 'Categories';
+$string['categories_desc'] = 'Only courses in these categories and their subcategories are recommended.';
+$string['categoryfilter'] = 'Filter by category';
+$string['categoryfilter_desc'] = 'Restrict the recommendations to some course categories.';
+$string['changeinterests'] = 'Change my interests';
+$string['charcount'] = '{$a->count} / {$a->max} characters';
+$string['configureai'] = 'Configure AI providers';
+$string['confirmdeletepath'] = 'Delete the learning path "{$a}"? Its ratings and statistics will be deleted too.';
+$string['consentaccept'] = 'I have read the notice and I want personalised recommendations';
+$string['consenttext'] = 'Privacy notice';
+$string['consenttext_desc'] = 'Text shown before the first use. Leave empty to use the default text: <br><em>{$a}</em>';
+$string['consenttextdefault'] = '<p>To recommend courses and learning paths, this site sends some data from your profile (for example city, country, institution, department, interests and description) and your answers to the questions to the artificial intelligence service configured by the site. Your name, email, username and other identifiers are never sent.</p><p>Your answers and ratings are stored so that we can improve your recommendations. You can change your answers at any time.</p><p>If you use voice dictation, speech recognition is done by your browser; some browsers send the audio to their manufacturer to transcribe it.</p>';
+$string['consenttitle'] = 'Personalised recommendations';
+$string['course'] = 'Course';
+$string['coursemoved'] = '{$a->name} moved to position {$a->position}.';
+$string['coursesforyou'] = 'Courses for you';
+$string['customprofilefields'] = 'Custom profile fields';
+$string['customprofilefields_desc'] = 'Custom user profile fields sent to the AI. None are sent by default.';
+$string['dailylimit'] = 'AI requests per learner and day';
+$string['dailylimit_desc'] = 'Maximum number of ranking requests a learner can trigger per day. When it is reached, the last ranking is shown with a notice. Scheduled task requests do not count.';
+$string['dictate'] = 'Dictate';
+$string['dictatelistening'] = 'Listening. Speak now.';
+$string['dictatestop'] = 'Stop';
+$string['editpath'] = 'Edit learning path';
+$string['endson'] = 'Ends {$a}';
+$string['enrolconfirm'] = 'Do you want to enrol in "{$a}"?';
+$string['enrolconfirmtitle'] = 'Enrol in the course';
+$string['enrolme'] = 'Enrol me';
+$string['enrolmethods'] = 'Enrolment methods';
+$string['enrolmethods_desc'] = 'A course is a candidate when it has an open instance of one of these methods. Only self enrolment without an enrolment key allows direct enrolment from the block; courses with other methods link to the course page.';
+$string['enrolpath'] = 'Enrol me in the whole path';
+$string['enrolpathconfirm'] = 'Enrol me';
+$string['enrolpathsummary'] = 'You will be enrolled in {$a->count} course(s). {$a->unavailable} course(s) are not available now.';
+$string['enrolresult_already'] = 'Already enrolled';
+$string['enrolresult_enrolled'] = 'Enrolled';
+$string['enrolresult_unavailable'] = 'Not available now';
+$string['enrolresults'] = 'Enrolment result';
+$string['erroraifailed'] = 'We could not get recommendations right now. Please try again in a few minutes.';
+$string['errorconsentrequired'] = 'You must accept the privacy notice first.';
+$string['errordaterange'] = 'The end date must be after the start date.';
+$string['erroremptyanswers'] = 'Please answer at least one question.';
+$string['errorenrol'] = 'You could not be enrolled in this course. Open the course page to see the enrolment options.';
+$string['errorhiddencourse'] = 'Only visible courses can be added to a learning path.';
+$string['errorlimitnoranking'] = 'You have reached the daily limit of recommendation requests. Please try again tomorrow.';
+$string['errornoactivequestion'] = 'At least one question must be active.';
+$string['errornoai'] = 'No AI provider is available for text generation.';
+$string['errornocourses'] = 'Select at least one course.';
+$string['errornoimageai'] = 'No AI provider is available for image generation.';
+$string['errorpathnotfound'] = 'This learning path does not exist or is not available.';
+$string['errorquestionnotext'] = 'Question {$a} is active but has no text.';
+$string['event_course_enrolled_from_recommendation'] = 'Enrolled in a course from a recommendation';
+$string['event_interests_updated'] = 'Learning interests updated';
+$string['event_path_enrolled'] = 'Enrolled in a learning path';
+$string['event_path_viewed'] = 'Learning path viewed';
+$string['event_recommendation_clicked'] = 'Recommendation clicked';
+$string['event_recommendation_rated'] = 'Recommendation rated';
+$string['event_recommendations_viewed'] = 'Recommendations viewed';
+$string['excludefield'] = 'Exclusion field';
+$string['excludefield_desc'] = 'Course custom field of type checkbox that means "Do not recommend". Courses with it ticked are never recommended.';
+$string['generatedescription'] = 'Generate description with AI';
+$string['generateimage'] = 'Generate image with AI';
+$string['generating'] = 'Generating… this can take a few seconds.';
+$string['includehiddenfields'] = 'Send non-public course fields';
+$string['includehiddenfields_desc'] = 'By default only course custom fields visible to everyone are sent to the AI. Enable this to also send fields visible only to teachers or to nobody. Their values may then appear in the explanations shown to learners.';
+$string['institutionprompt'] = 'Institution prompt';
+$string['institutionprompt_desc'] = 'Optional instructions about tone, style and priorities, for example "Use a warm tone and highlight certified courses". They cannot change the rules or the output format. Available variables: {sitename}, {userlang}, {maxresults}, {today}.';
+$string['learningpath'] = 'Learning path';
+$string['learningpaths'] = 'Learning paths';
+$string['limitreached'] = 'You have reached today\'s limit of new recommendations. These are your latest recommendations.';
+$string['loading'] = 'Looking for the best courses for you…';
+$string['managepaths'] = 'Manage learning paths';
+$string['maxcoursesperprompt'] = 'Maximum courses per request';
+$string['maxcoursesperprompt_desc'] = 'When there are more candidate courses, a local word match between the learner data and the courses selects the best ones before calling the AI.';
+$string['maxpathresults'] = 'Paths shown';
+$string['maxpathresults_desc'] = 'Number of learning paths shown at once.';
+$string['maxpaths'] = 'Paths ranked';
+$string['maxpaths_desc'] = 'Maximum number of learning paths the AI ranks in one request.';
+$string['maxranked'] = 'Courses ranked';
+$string['maxranked_desc'] = 'Maximum number of courses the AI ranks in one request. "See more" pages through them without new requests.';
+$string['maxresults'] = 'Courses shown';
+$string['maxresults_desc'] = 'Number of courses shown at once.';
+$string['messageprovider:newcourse'] = 'New courses that match your interests';
+$string['moreloaded'] = '{$a} more recommendations loaded.';
+$string['movedown_a'] = 'Move {$a} down';
+$string['moveup_a'] = 'Move {$a} up';
+$string['negativedays'] = 'Days hidden after a thumbs down';
+$string['negativedays_desc'] = 'Items rated as not useful are not recommended again to that learner during this number of days.';
+$string['nextedition'] = 'next edition starts {$a}';
+$string['nopaths'] = 'There are no learning paths yet.';
+$string['noprovideradmin'] = 'The AI course recommender needs an AI provider with text generation enabled. Only administrators see this message.';
+$string['noresults'] = 'There are no available courses that match your interests right now. You can browse the catalogue or change your interests.';
+$string['notificationbody'] = 'There is a new course that matches your interests: {$a->name}
+
+{$a->reason}
+
+{$a->url}';
+$string['notificationbodyhtml'] = '<p>There is a new course that matches your interests: <a href="{$a->url}">{$a->name}</a></p><p>{$a->reason}</p>';
+$string['notificationsubject'] = 'There is a new course that matches your interests: {$a}';
+$string['notifyactivedays'] = 'Learner activity (days)';
+$string['notifyactivedays_desc'] = 'Only learners who accessed the site in the last days are checked for new courses.';
+$string['notifyenabled'] = 'Notify new courses';
+$string['notifyenabled_desc'] = 'Send a notification when a new candidate course reaches the relevance threshold for a learner.';
+$string['notifymaxusers'] = 'Learners per run';
+$string['notifymaxusers_desc'] = 'Maximum number of learners checked in each run of the daily task, to control the cost. The rest are checked in the next runs.';
+$string['notifythreshold'] = 'Relevance threshold for notifications';
+$string['notifythreshold_desc'] = 'Score from 0 to 100 a new course must reach to notify the learner.';
+$string['order'] = 'Order';
+$string['path'] = 'Learning path';
+$string['pathcoursecount'] = '{$a} courses';
+$string['pathcoursecountone'] = '1 course';
+$string['pathcourseorder'] = 'Course order';
+$string['pathcourseorder_empty'] = 'Select courses above. You can then change their order here.';
+$string['pathcourses'] = 'Courses';
+$string['pathcourses_help'] = 'Courses of the path. Courses without open enrolment can be added too; they appear as not available now.';
+$string['pathcoursesnumber'] = 'Number of courses';
+$string['pathdeleted'] = 'Learning path deleted.';
+$string['pathdescription'] = 'Description';
+$string['pathimage'] = 'Image';
+$string['pathname'] = 'Title';
+$string['pathname_help'] = 'Title of the learning path. Multilang spans are supported.';
+$string['pathnocourses'] = 'This learning path has no courses available to you.';
+$string['pathprogress'] = '{$a->completed} of {$a->total} courses completed';
+$string['paths'] = 'Learning paths';
+$string['pathsaved'] = 'Learning path saved.';
+$string['pathsforyou'] = 'Learning paths for you';
+$string['pluginname'] = 'AI course recommender';
+$string['policydeclined'] = 'Recommendations use AI, so they are only available after you accept the AI usage policy.';
+$string['privacy:activity'] = 'Activity';
+$string['privacy:ailog'] = 'AI requests';
+$string['privacy:answers'] = 'Answers';
+$string['privacy:feedback'] = 'Ratings';
+$string['privacy:history'] = 'Answer history';
+$string['privacy:metadata:activity'] = 'Recommendations shown to the user, clicked or used to enrol.';
+$string['privacy:metadata:activity:action'] = 'Action: shown, click or enrol.';
+$string['privacy:metadata:activity:position'] = 'Position of the item in the ranking.';
+$string['privacy:metadata:ailog'] = 'Log of the AI requests made for the user.';
+$string['privacy:metadata:ailog:calltype'] = 'Type of request.';
+$string['privacy:metadata:ailog:duration'] = 'Duration of the request.';
+$string['privacy:metadata:ailog:success'] = 'Whether the request succeeded.';
+$string['privacy:metadata:ailog:tokens'] = 'Tokens used, when the provider reports them.';
+$string['privacy:metadata:answerhist'] = 'Previous versions of the answers of the user.';
+$string['privacy:metadata:answers'] = 'Latest answers of the user to the questionnaire and consent.';
+$string['privacy:metadata:answers:answers'] = 'Answers to the questions.';
+$string['privacy:metadata:answers:consent'] = 'Whether the user accepted the privacy notice.';
+$string['privacy:metadata:answers:timeconsent'] = 'When the user accepted the privacy notice.';
+$string['privacy:metadata:answers:userid'] = 'The user.';
+$string['privacy:metadata:core_ai'] = 'Profile data (never names or identifiers), questionnaire answers and recent negative ratings are sent to the AI subsystem to generate the recommendations.';
+$string['privacy:metadata:core_message'] = 'Notifications about new courses that match the interests of the user.';
+$string['privacy:metadata:feedback'] = 'Ratings of recommendations given by the user.';
+$string['privacy:metadata:feedback:rating'] = 'Rating: useful or not useful.';
+$string['privacy:metadata:feedback:reason'] = 'Why the item does not fit, when given.';
+$string['privacy:metadata:itemid'] = 'Id of the course or learning path.';
+$string['privacy:metadata:itemtype'] = 'Course or learning path.';
+$string['privacy:metadata:paths'] = 'Learning paths.';
+$string['privacy:metadata:paths:usermodified'] = 'The user who last modified the learning path.';
+$string['privacy:metadata:ranking'] = 'The last ranking of courses and learning paths generated for the user.';
+$string['privacy:metadata:ranking:courses'] = 'Ranked courses with score and explanation.';
+$string['privacy:metadata:ranking:lang'] = 'Language of the ranking.';
+$string['privacy:metadata:ranking:paths'] = 'Ranked learning paths with score and explanation.';
+$string['privacy:metadata:ranking:timeexpires'] = 'When the ranking expires.';
+$string['privacy:metadata:timecreated'] = 'Time created.';
+$string['privacy:metadata:timemodified'] = 'Time modified.';
+$string['privacy:ranking'] = 'Ranking';
+$string['profilefield_city'] = 'City/town';
+$string['profilefield_country'] = 'Country';
+$string['profilefield_department'] = 'Department';
+$string['profilefield_description'] = 'Profile description';
+$string['profilefield_institution'] = 'Institution';
+$string['profilefield_interests'] = 'Interests (profile tags)';
+$string['profilefields'] = 'Standard profile fields';
+$string['profilefields_desc'] = 'Standard profile fields sent to the AI. The current language of the user is always sent.';
+$string['progresspercent'] = '{$a}% completed';
+$string['question1'] = 'What is your current professional role, and in which sector or type of organisation do you work?';
+$string['question1help'] = 'For example: primary school teacher in a public school, or project manager in an engineering firm.';
+$string['question2'] = 'What do you want to achieve with your training in the coming months? For example: improve in your current job, move to another area, lead a specific project or earn a certificate.';
+$string['question2help'] = 'Tell us your main goal. The more concrete, the better the recommendations.';
+$string['question3'] = 'Which topics or specific skills do you want to learn or strengthen, and what is your level in them?';
+$string['question3help'] = 'For example: data analysis (basic), public speaking (intermediate).';
+$string['question4'] = 'How much time can you dedicate per week and how do you prefer to learn? For example: at your own pace, with a tutor, with live sessions or with fixed dates.';
+$string['question4help'] = 'For example: 3 hours a week, self-paced, preferably with a certificate.';
+$string['questiondefault'] = 'Leave empty to use the default question, translated to each language.';
+$string['questionenabled'] = 'Active';
+$string['questionhelp'] = 'Help text (optional)';
+$string['questionnaireintro'] = 'Answer in your own words. You can use the microphone to dictate.';
+$string['questionnairetitle'] = 'Tell us about you';
+$string['questionnumber'] = 'Question {$a}';
+$string['questions'] = 'Questions';
+$string['questions_desc'] = 'Up to six questions. Question texts accept multilang spans. At least one question must be active. Answers are limited to 1000 characters.';
+$string['questiontext'] = 'Question text';
+$string['rateitem'] = 'Rate this recommendation';
+$string['ratenotuseful'] = 'Not useful for me';
+$string['rateuseful'] = 'Useful';
+$string['ratingsaved'] = 'Thanks for your rating.';
+$string['reasonsaved'] = 'Thanks, we will take it into account.';
+$string['refreshprogress'] = 'Refresh the page to see your progress';
+$string['report'] = 'AI course recommender report';
+$string['report_aicalls'] = 'AI requests';
+$string['report_aierrors'] = 'AI errors';
+$string['report_ailog'] = 'AI requests';
+$string['report_calltype'] = 'Type';
+$string['report_clicks'] = 'Clicks';
+$string['report_ctr'] = 'Click-through rate';
+$string['report_duration'] = 'Duration (s)';
+$string['report_enrolments'] = 'Enrolments';
+$string['report_negative'] = 'Not useful';
+$string['report_positive'] = 'Useful';
+$string['report_shown'] = 'Times shown';
+$string['report_success'] = 'Success';
+$string['report_tokens'] = 'Tokens';
+$string['report_topcourses'] = 'Most recommended courses';
+$string['report_toppaths'] = 'Most recommended learning paths';
+$string['report_users'] = 'Learners who saved answers';
+$string['requireconsent'] = 'Require consent';
+$string['requireconsent_desc'] = 'Show the privacy notice and ask for acceptance before the first use.';
+$string['resultsloaded'] = 'Recommendations loaded: {$a->courses} courses and {$a->paths} learning paths.';
+$string['retry'] = 'Try again';
+$string['saveanswers'] = 'Get my recommendations';
+$string['seemorecourses'] = 'See more courses';
+$string['seemorepaths'] = 'See more learning paths';
+$string['send'] = 'Send';
+$string['settings'] = 'Settings';
+$string['settings_ai'] = 'Artificial intelligence';
+$string['settings_catalog'] = 'Catalogue';
+$string['settings_notifications'] = 'Notifications';
+$string['settings_paths'] = 'Learning paths';
+$string['settings_privacy'] = 'Privacy';
+$string['settings_profile'] = 'Profile data';
+$string['settings_profile_desc'] = 'Name, email, username, id number, phone, address, IP address and any id are never sent.';
+$string['settings_questions'] = 'Questions';
+$string['settings_results'] = 'Results';
+$string['showpaths'] = 'Recommend learning paths';
+$string['showpaths_desc'] = 'Show a section with recommended learning paths.';
+$string['start'] = 'Start';
+$string['startson'] = 'Starts {$a}';
+$string['status_available'] = 'Available';
+$string['status_completed'] = 'Completed';
+$string['status_inprogress'] = 'In progress';
+$string['status_unavailable'] = 'Not available now';
+$string['stepnumber'] = 'Step {$a}:';
+$string['summariesperrun'] = 'Course summaries per run';
+$string['summariesperrun_desc'] = 'Maximum number of course summaries generated by AI in each run of the hourly task. Summaries are only regenerated when the course data changes.';
+$string['taskgeneratesummaries'] = 'Generate AI course summaries';
+$string['tasknotifynewcourses'] = 'Rank new courses and notify learners';
+$string['taskrefreshsummaries'] = 'Refresh AI course summaries after a custom field change';
+$string['taskupdatecoursesummary'] = 'Refresh the AI summary of a course';
+$string['viewcourse'] = 'View course';
+$string['viewpath'] = 'View path';
+$string['whynotfit'] = 'Why does it not fit you? (optional)';
+$string['whyrecommended'] = 'Why we recommend it:';
+$string['yourprogress'] = 'Your progress';

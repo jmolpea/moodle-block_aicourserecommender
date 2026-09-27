@@ -1,0 +1,249 @@
+/* AI course recommender. Layout adapts to the width of the block container, not the window:
+   block.js measures the container with a ResizeObserver and sets aicr-w-md (>= 520px) and aicr-w-lg (>= 900px). */
+.block-aicourserecommender .aicr-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin: 0 0 0.75rem;
+    padding: 0;
+}
+
+.block-aicourserecommender.aicr-w-md .aicr-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.block-aicourserecommender.aicr-w-lg .aicr-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.block-aicourserecommender .aicr-section + .aicr-section {
+    margin-top: 1rem;
+}
+
+.block-aicourserecommender .aicr-section-title {
+    margin-bottom: 0.5rem;
+}
+
+.block-aicourserecommender .aicr-card {
+    overflow: hidden;
+}
+
+.block-aicourserecommender .aicr-card-img {
+    width: 100%;
+    aspect-ratio: 16 / 7;
+    object-fit: cover;
+    background-color: #e9ecef;
+}
+
+.block-aicourserecommender .aicr-card-body {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem;
+}
+
+.block-aicourserecommender .aicr-card-title {
+    margin-bottom: 0.25rem;
+    overflow-wrap: anywhere;
+}
+
+.block-aicourserecommender .aicr-date + .aicr-date::before {
+    content: " · ";
+}
+
+.block-aicourserecommender .aicr-reason {
+    margin: 0.5rem 0;
+}
+
+.block-aicourserecommender .aicr-actions,
+.block-aicourserecommender .aicr-buttons,
+.block-aicourserecommender .aicr-rating-buttons,
+.block-aicourserecommender .aicr-reason-row,
+.block-aicourserecommender .aicr-answer-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.block-aicourserecommender .aicr-actions {
+    margin-top: auto;
+}
+
+.block-aicourserecommender .aicr-rating {
+    margin-top: 0.5rem;
+}
+
+.block-aicourserecommender .aicr-reason-row .form-control {
+    flex: 1 1 10rem;
+    width: auto;
+}
+
+.block-aicourserecommender .aicr-rate[aria-pressed="true"] {
+    color: #fff;
+    background-color: #495057;
+    border-color: #495057;
+}
+
+.block-aicourserecommender .aicr-question-label {
+    font-weight: bold;
+    display: block;
+}
+
+.block-aicourserecommender .aicr-answer-tools {
+    justify-content: space-between;
+    margin-top: 0.25rem;
+}
+
+.block-aicourserecommender .aicr-mic.aicr-recording {
+    color: #fff;
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+.block-aicourserecommender .aicr-mic.aicr-recording .aicr-mic-icon {
+    animation: aicr-pulse 1s ease-in-out infinite;
+}
+
+@keyframes aicr-pulse {
+    50% {
+        opacity: 0.4;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .block-aicourserecommender .aicr-mic.aicr-recording .aicr-mic-icon,
+    .block-aicourserecommender .aicr-skeleton > div {
+        animation: none;
+    }
+}
+
+.block-aicourserecommender .aicr-skeleton {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+}
+
+.block-aicourserecommender .aicr-skeleton > div {
+    background: #e9ecef;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    height: 0.9rem;
+    animation: aicr-pulse 1.4s ease-in-out infinite;
+}
+
+.block-aicourserecommender .aicr-skeleton .aicr-skeleton-img {
+    height: 5rem;
+}
+
+.block-aicourserecommender .aicr-skeleton .aicr-short {
+    width: 60%;
+}
+
+.block-aicourserecommender .aicr-footer {
+    margin-top: 0.5rem;
+}
+
+.block-aicourserecommender a:focus-visible,
+.block-aicourserecommender button:focus-visible,
+.aicr-pathpage a:focus-visible,
+.aicr-pathpage button:focus-visible {
+    outline: 3px solid #0f6cbf;
+    outline-offset: 2px;
+}
+
+/* Learning path landing page. */
+.aicr-pathpage .aicr-path-banner {
+    width: 100%;
+    max-height: 280px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.aicr-pathpage .aicr-path-course-inner {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 0.75rem;
+}
+
+.aicr-pathpage .aicr-path-number {
+    flex: 0 0 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: #0f6cbf;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.aicr-pathpage .aicr-path-course-img {
+    width: 120px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 0.25rem;
+}
+
+.aicr-pathpage .aicr-path-course-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.aicr-pathpage .aicr-mini-progress {
+    height: 0.5rem;
+    max-width: 240px;
+}
+
+@media (max-width: 575.98px) {
+    .aicr-pathpage .aicr-path-course-img {
+        display: none;
+    }
+}
+
+.aicr-status {
+    font-weight: bold;
+}
+
+.aicr-status-completed,
+.aicr-status-enrolled {
+    color: #357a32;
+}
+
+.aicr-status-inprogress,
+.aicr-status-already {
+    color: #0f6cbf;
+}
+
+.aicr-status-unavailable {
+    color: #6a737b;
+}
+
+/* Learning path form and management. */
+.aicr-course-order .aicr-order-name {
+    flex: 1 1 auto;
+}
+
+.aicr-course-order .aicr-order-btn {
+    margin-left: 0.25rem;
+}
+
+.aicr-ai-image-preview img {
+    max-height: 200px;
+}
+
+.aicr-totals {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: 0.75rem;
+}
+
+.aicr-totals .aicr-total {
+    padding: 0.75rem;
+    margin: 0;
+}
+
+.aicr-totals dd {
+    margin: 0;
+}
