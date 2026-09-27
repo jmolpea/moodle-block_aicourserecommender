@@ -1,0 +1,7 @@
+# Working notes that are not part of the plugin.
+prompt-*.md
+SPEC.md
+node_modules/
+.idea/
+.vscode/
+*.zip
