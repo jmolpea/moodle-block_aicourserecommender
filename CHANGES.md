@@ -1,5 +1,12 @@
 # Changes
 
+## 1.0.0-beta2 (2026092900)
+
+- First-use wizard: visual steps, one question per card, single acceptance of the notice and the AI policy, summary to edit answers.
+- "Enrol me in the whole path" explains, course by course, why a course could not be enrolled in.
+- Corporate image style setting for AI generated path images.
+- Path AI actions show the error returned by the AI provider.
+
 ## 1.0.0-beta (2026092800)
 
 First release.

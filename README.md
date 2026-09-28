@@ -43,7 +43,7 @@ The plugin does not store any API key and does not call any external service dir
 3. **Profile data**: choose the standard fields sent to the AI (city, country, institution, department, interests, description) and any custom profile field. Names, email, username, id number, phone, address, IP and ids are never sent.
 4. **Catalogue**: optional category filter, enrolment methods that make a course a candidate (self by default), and a course custom field of type checkbox that means "Do not recommend".
 5. **Results**: courses shown (4), courses ranked (24), paths shown (2), paths ranked (6), notification threshold (70) and days a thumbs-down item stays hidden (90).
-6. **Learning paths**: enable or disable path recommendations and open *Manage learning paths*.
+6. **Learning paths**: enable or disable path recommendations, set the corporate **image style** (colours, illustration style, mood) used by "Generate image with AI", and open *Manage learning paths*.
 7. **Notifications**: new-course notifications, learner activity window (90 days) and learners per run (200).
 8. **Privacy**: require consent (on by default) and the notice text.
 
@@ -82,8 +82,10 @@ when it is relevant for {sitename} learners.
 
 - **Large catalogues**: at most *Maximum courses per request* (120) candidates are sent in one request. When there are more, a local word match between the learner data and the course names, tags, summaries and categories keeps the best ones before calling the AI. Very generic answers may leave out relevant courses; more specific answers or the category filter help.
 - **Voice dictation** uses the browser's Web Speech API. It is available in Chrome, Edge and Safari; the microphone button is hidden in browsers without support (for example Firefox). Some browsers send the audio to their manufacturer to transcribe it; the default privacy notice says so.
-- Only **self enrolment without an enrolment key** allows direct enrolment from the block. Courses with a key or other methods (for example payment) are recommended with a link to the course page.
+- Only **self enrolment without an enrolment key** allows direct enrolment from the block and from "Enrol me in the whole path". For every other course the path page explains why (enrolment key, payment, dates, no seats, finished course or no self enrolment). Courses with a key or other methods (for example payment) are recommended with a link to the course page.
 - AI answers depend on your provider and model. Invalid answers are retried once; if they still fail, the learner sees an error and can try again.
+
+- **Image generation with OpenAI on Moodle 4.5.0 to 4.5.13**: the core OpenAI provider sends a parameter that the current OpenAI image API rejects ("Unknown parameter: 'response_format'"). Update Moodle to 4.5.14 or later (or 5.x) and select a current image model (for example `gpt-image-1`) in the provider settings. The error returned by the provider is shown to the manager.
 
 ## Privacy
 

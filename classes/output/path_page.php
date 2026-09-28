@@ -90,15 +90,12 @@ class path_page implements renderable, templatable {
                 'futurestart' => $futurestart,
                 'futurestartdate' => $futurestart ? userdate($course->startdate, $dateformat) : '',
                 'directenrol' => $item['directenrol'],
+                'reason' => $item['reason'],
+                'hasreason' => $item['reason'] !== '',
             ];
         }
         $total = count($courses);
-        $pending = 0;
-        foreach ($courses as $course) {
-            if (!$course['iscompleted'] && !$course['isinprogress'] && !$course['directenrol']) {
-                $pending++;
-            }
-        }
+        $blocked = array_values(array_filter($courses, static fn($c) => $c['hasreason']));
         return [
             'id' => (int) $this->path->id,
             'uniqid' => \html_writer::random_id('aicrpath'),
@@ -116,11 +113,10 @@ class path_page implements renderable, templatable {
                 ['completed' => $completed, 'total' => $total]
             ),
             'canenrolall' => $direct > 0,
-            'enrolsummary' => get_string(
-                'enrolpathsummary',
-                'block_aicourserecommender',
-                ['count' => $direct, 'unavailable' => $pending]
-            ),
+            'noneavailable' => $direct === 0 && count($blocked) > 0,
+            'enrolsummary' => get_string('enrolpathsummary', 'block_aicourserecommender', $direct),
+            'blocked' => array_map(static fn($c) => ['name' => $c['name'], 'reason' => $c['reason']], $blocked),
+            'hasblocked' => count($blocked) > 0,
         ];
     }
 }

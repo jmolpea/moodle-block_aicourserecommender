@@ -20,23 +20,31 @@
     Result of "Enrol me in the whole path", one line per course.
 
     Context variables required for this template:
-    * results - courseid, name, status, statuslabel
+    * results - courseid, name, status, statuslabel, reason
+    * count - Number of new enrolments
+    * hasunavailable - Whether some courses could not be enrolled in
     * pageurl - URL of the page, to refresh the progress
 
     Example context (json):
     {
         "pageurl": "https://example.com/blocks/aicourserecommender/path.php?id=1",
+        "count": 1, "hasunavailable": true,
         "results": [
-            {"courseid": 2, "name": "Basics", "status": "enrolled", "statuslabel": "Enrolled"},
-            {"courseid": 3, "name": "Advanced", "status": "unavailable", "statuslabel": "Not available now"}
+            {"courseid": 2, "name": "Basics", "status": "enrolled", "statuslabel": "Enrolled", "reason": ""},
+            {"courseid": 3, "name": "Advanced", "status": "unavailable", "statuslabel": "Not enrolled",
+             "reason": "This course requires payment."}
         ]
     }
 }}
 <div class="alert alert-info mt-3" role="status">
     <p class="mb-1"><strong>{{#str}} enrolresults, block_aicourserecommender {{/str}}</strong></p>
+    <p class="mb-1">{{#str}} enrolresultscount, block_aicourserecommender, {{count}} {{/str}}</p>
+    {{#hasunavailable}}
+    <p class="mb-1">{{#str}} enrolresultspartial, block_aicourserecommender {{/str}}</p>
+    {{/hasunavailable}}
     <ul class="mb-0">
         {{#results}}
-        <li>{{{name}}}: <span class="aicr-status aicr-status-{{status}}">{{statuslabel}}</span></li>
+        <li>{{{name}}}: <span class="aicr-status aicr-status-{{status}}">{{statuslabel}}</span>{{#reason}}. {{reason}}{{/reason}}</li>
         {{/results}}
     </ul>
     <p class="mb-0 mt-2"><a href="{{pageurl}}">{{#str}} refreshprogress, block_aicourserecommender {{/str}}</a></p>

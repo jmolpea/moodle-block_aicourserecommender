@@ -251,6 +251,15 @@ if ($ADMIN->fulltree) {
         new lang_string('showpaths_desc', $component),
         1
     ));
+    $settings->add(new admin_setting_configtextarea(
+        'block_aicourserecommender/imagestyleprompt',
+        new lang_string('imagestyleprompt', $component),
+        new lang_string('imagestyleprompt_desc', $component, prompt_builder::DEFAULT_IMAGE_STYLE),
+        '',
+        PARAM_TEXT,
+        60,
+        4
+    ));
 
     // Notifications.
     $settings->add(new admin_setting_heading(

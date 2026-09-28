@@ -346,7 +346,7 @@ class path_manager {
      *                 progress (int|null) and directenrol (bool).
      */
     public static function get_progress(int $pathid, int $userid): array {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
         require_once($CFG->libdir . '/completionlib.php');
 
         $courseids = self::get_course_ids($pathid);
@@ -384,11 +384,19 @@ class path_manager {
             } else if (isset($candidates[$courseid])) {
                 $status = 'available';
             }
+            $direct = $status === 'available' && $helper->get_direct_instance($courseid, $userid) !== null;
+            $reason = '';
+            if (!$enrolled && !$direct) {
+                // Only the current user can be asked by enrol_self; other users get the generic reason.
+                $reason = $userid === (int) $USER->id ? $helper->get_unavailable_reason($course) : '';
+                $reason = $reason !== '' ? $reason : get_string('reason_noself', 'block_aicourserecommender');
+            }
             $result[] = [
                 'course' => $course,
                 'status' => $status,
                 'progress' => $progress,
-                'directenrol' => $status === 'available' && $helper->get_direct_instance($courseid, $userid) !== null,
+                'directenrol' => $direct,
+                'reason' => $reason,
             ];
         }
         return $result;

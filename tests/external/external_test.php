@@ -182,6 +182,13 @@ final class external_test extends \externallib_advanced_testcase {
         $this->assertTrue($image['success']);
         $this->assertSame('ai-image.png', $image['filename']);
 
+        // The manager sees the provider error instead of a generic message.
+        $this->ai->imageerror = "Unknown parameter: 'response_format'.";
+        $image = generate_path_image::execute('Data path', '');
+        $this->assertFalse($image['success']);
+        $this->assertStringContainsString('response_format', $image['error']);
+        $this->assertStringNotContainsString('recommendations', $image['error']);
+
         $this->ai->imageavailable = false;
         $image = generate_path_image::execute('Data path', '');
         $this->assertFalse($image['success']);

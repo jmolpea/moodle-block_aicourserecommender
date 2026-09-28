@@ -30,6 +30,9 @@ class prompt_builder {
     /** @var string Version of the base prompt. Part of the ranking hash, so a change regenerates every ranking. */
     public const PROMPT_VERSION = '2026092701';
 
+    /** @var string Image style used when the admin has not set a corporate style. */
+    public const DEFAULT_IMAGE_STYLE = 'Clean, modern and friendly flat design with soft colours.';
+
     /** @var string Base rules of the ranking prompt. */
     public const BASE_PROMPT = <<<'EOT'
 You are the course advisor of {sitename}, an online learning platform. Your job is to rank the available
@@ -240,9 +243,15 @@ EOT;
      * @return string
      */
     public static function build_image_prompt(string $title, string $description): string {
-        return "A clean, modern, friendly illustration for an online learning path titled \"" . $title . "\". " .
-            "Theme: " . \core_text::substr($description, 0, 600) . " " .
-            "Flat design, soft colours, no text, no letters, no logos, suitable as a wide banner.";
+        // The corporate style set by the admin replaces the default style; the safety rules always apply.
+        $style = trim(config::get_string('imagestyleprompt'));
+        if ($style === '') {
+            $style = self::DEFAULT_IMAGE_STYLE;
+        }
+        return "An illustration for an online learning path titled \"" . $title . "\". " .
+            "Theme: " . \core_text::substr($description, 0, 600) . "\n" .
+            "Visual style: " . \core_text::substr($style, 0, 1000) . "\n" .
+            "No text, no letters, no logos, no real people. Suitable as a wide banner.";
     }
 
     /**

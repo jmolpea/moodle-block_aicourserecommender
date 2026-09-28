@@ -105,7 +105,9 @@ class generate_path_description extends external_api {
         );
         $result = $client->generate_text($prompt, (int) $USER->id, ai_client::CALL_DESCRIPTION);
         if (!$result['success']) {
-            return ['success' => false, 'description' => '', 'error' => get_string('erroraifailed', 'block_aicourserecommender')];
+            $reason = rtrim(\core_text::substr(clean_param((string) $result['error'], PARAM_TEXT), 0, 300), '. ');
+            return ['success' => false, 'description' => '',
+                'error' => get_string('errordescriptionfailed', 'block_aicourserecommender', $reason)];
         }
         $data = response_parser::decode_json_object($result['text']);
         $texts = [];
@@ -119,7 +121,7 @@ class generate_path_description extends external_api {
                 $texts[array_key_first($languages)] = trim(clean_param($result['text'], PARAM_TEXT));
             } else {
                 return ['success' => false, 'description' => '',
-                    'error' => get_string('erroraifailed', 'block_aicourserecommender')];
+                    'error' => get_string('errordescriptionformat', 'block_aicourserecommender')];
             }
         }
         return ['success' => true, 'description' => self::build_html($texts), 'error' => ''];

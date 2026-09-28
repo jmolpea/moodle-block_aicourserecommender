@@ -73,7 +73,9 @@ class generate_path_image extends external_api {
         );
         $result = $client->generate_image($prompt, (int) $USER->id);
         if (!$result['success'] || !$result['file']) {
-            return $empty + ['error' => get_string('erroraifailed', 'block_aicourserecommender')];
+            // Managers see the reason given by the provider (for example an unsupported model or parameter).
+            $reason = rtrim(\core_text::substr(clean_param((string) $result['error'], PARAM_TEXT), 0, 300), '. ');
+            return $empty + ['error' => get_string('errorimagefailed', 'block_aicourserecommender', $reason)];
         }
         /** @var \stored_file $file */
         $file = $result['file'];

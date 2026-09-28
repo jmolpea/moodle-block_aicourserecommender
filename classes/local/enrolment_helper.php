@@ -55,6 +55,54 @@ class enrolment_helper {
     }
 
     /**
+     * Why the current user cannot enrol directly in a course, in plain words.
+     *
+     * For self enrolment the messages of the enrol_self plugin are reused (dates, seats, cohort...), so they are
+     * already translated and always match what the course page says.
+     *
+     * @param \stdClass $course Course record.
+     * @return string Plain text reason.
+     */
+    public function get_unavailable_reason(\stdClass $course): string {
+        global $CFG;
+        require_once($CFG->libdir . '/enrollib.php');
+        $component = 'block_aicourserecommender';
+        $now = \core\di::get(\core\clock::class)->time();
+        if (!empty($course->enddate) && $course->enddate < $now) {
+            return get_string('reason_ended', $component);
+        }
+        $instances = enrol_get_instances((int) $course->id, true);
+        $self = array_filter($instances, static fn($i) => $i->enrol === 'self');
+        if ($self && enrol_is_enabled('self')) {
+            $plugin = enrol_get_plugin('self');
+            $message = '';
+            foreach ($self as $instance) {
+                if ((string) $instance->password !== '') {
+                    $result = $plugin->can_self_enrol($instance);
+                    if ($result === true) {
+                        return get_string('reason_key', $component);
+                    }
+                } else {
+                    $result = $plugin->can_self_enrol($instance);
+                    if ($result === true) {
+                        return '';
+                    }
+                }
+                $message = $message ?: trim(html_to_text((string) $result, 0, false));
+            }
+            if ($message !== '') {
+                return $message;
+            }
+        }
+        foreach ($instances as $instance) {
+            if (in_array($instance->enrol, ['fee', 'paypal'], true) && enrol_is_enabled($instance->enrol)) {
+                return get_string('reason_payment', $component);
+            }
+        }
+        return get_string('reason_noself', $component);
+    }
+
+    /**
      * Enrols the current user in a recommended course.
      *
      * @param int $courseid Course id.
@@ -109,10 +157,16 @@ class enrolment_helper {
                 $status = 'enrolled';
                 $count++;
             }
+            if ($item['directenrol'] && $status === 'unavailable') {
+                // The instance was open a moment ago but the enrolment failed (for example, the last seat was taken).
+                $reason = $this->get_unavailable_reason($course);
+                $item['reason'] = $reason !== '' ? $reason : get_string('reason_noself', 'block_aicourserecommender');
+            }
             $results[] = [
                 'courseid' => (int) $course->id,
                 'name' => format_string($course->fullname, true, ['context' => \context_course::instance($course->id)]),
                 'status' => $status,
+                'reason' => $status === 'unavailable' ? $item['reason'] : '',
             ];
         }
         if ($count > 0) {

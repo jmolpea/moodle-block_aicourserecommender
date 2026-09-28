@@ -23,29 +23,31 @@
     * id, uniqid, name, description, image
     * courses - Ordered courses with status
     * total, completed, percentage, progresstext
-    * canenrolall, enrolsummary
+    * canenrolall, noneavailable, enrolsummary - Whole path enrolment
+    * blocked, hasblocked - Courses that cannot be enrolled in directly, with the reason
 
     Example context (json):
     {
         "id": 1, "uniqid": "aicrpath1", "name": "Leadership path", "description": "<p>Learn to lead teams.</p>",
         "image": "https://example.com/p.png", "hascourses": true, "total": 2, "completed": 1, "percentage": 50,
         "progresstext": "1 of 2 courses completed", "canenrolall": true,
-        "enrolsummary": "You will be enrolled in 1 course. 0 courses are not available now.",
+        "noneavailable": false, "enrolsummary": "You will be enrolled in 1 course.",
+        "hasblocked": true, "blocked": [{"name": "Payment course", "reason": "This course requires payment."}],
         "courses": [
             {"number": 1, "id": 2, "name": "Basics", "image": "https://example.com/c.png", "url": "https://example.com",
              "startdate": "1 October 2026", "enddate": "", "summary": "Intro", "status": "completed",
              "statuslabel": "Completed", "iscompleted": true, "isinprogress": false, "isavailable": false,
              "isunavailable": false, "hasprogress": false, "progress": 100, "futurestart": false,
-             "futurestartdate": "", "directenrol": false},
+             "futurestartdate": "", "directenrol": false, "reason": "", "hasreason": false},
             {"number": 2, "id": 3, "name": "Advanced", "image": "https://example.com/c.png", "url": "https://example.com",
              "startdate": "", "enddate": "", "summary": "More", "status": "available", "statuslabel": "Available",
              "iscompleted": false, "isinprogress": false, "isavailable": true, "isunavailable": false,
-             "hasprogress": false, "progress": 0, "futurestart": false, "futurestartdate": "", "directenrol": true}
+             "hasprogress": false, "progress": 0, "futurestart": false, "futurestartdate": "", "directenrol": true,
+             "reason": "", "hasreason": false}
         ]
     }
 }}
-<div class="aicr-pathpage" id="{{uniqid}}" data-region="aicr-path" data-pathid="{{id}}"
-    data-enrolsummary="{{enrolsummary}}">
+<div class="aicr-pathpage" id="{{uniqid}}" data-region="aicr-path" data-pathid="{{id}}">
     <header class="aicr-path-header mb-4">
         <img src="{{image}}" alt="" class="aicr-path-banner">
         <div class="aicr-path-intro">
@@ -66,12 +68,27 @@
 
     {{#canenrolall}}
     <div class="aicr-path-enrol mb-4">
+        <p class="mb-2">{{#str}} enrolpathintro, block_aicourserecommender {{/str}}</p>
         <button type="button" class="btn btn-primary" data-action="enrol-path">
             {{#str}} enrolpath, block_aicourserecommender {{/str}}
         </button>
         <div data-region="enrol-results" aria-live="polite"></div>
     </div>
+    <template data-region="enrol-summary">
+        <p>{{enrolsummary}}</p>
+        {{#hasblocked}}
+        <p class="mb-1">{{#str}} enrolpathblocked, block_aicourserecommender {{/str}}</p>
+        <ul>
+            {{#blocked}}
+            <li><strong>{{{name}}}</strong>: {{reason}}</li>
+            {{/blocked}}
+        </ul>
+        {{/hasblocked}}
+    </template>
     {{/canenrolall}}
+    {{#noneavailable}}
+    <div class="alert alert-info mb-4" role="status">{{#str}} enrolpathnone, block_aicourserecommender {{/str}}</div>
+    {{/noneavailable}}
 
     <section aria-labelledby="{{uniqid}}-courses">
         <h3 id="{{uniqid}}-courses" class="h5">{{#str}} pathcourses, block_aicourserecommender {{/str}}</h3>
@@ -91,6 +108,7 @@
                             {{#hasprogress}}<span> · {{#str}} progresspercent, block_aicourserecommender, {{progress}} {{/str}}</span>{{/hasprogress}}
                             {{#futurestart}}<span> · {{#str}} nextedition, block_aicourserecommender, {{futurestartdate}} {{/str}}</span>{{/futurestart}}
                         </p>
+                        {{#hasreason}}<p class="small aicr-reason-text mb-1">{{reason}}</p>{{/hasreason}}
                         {{#hasprogress}}
                         <div class="progress aicr-mini-progress mb-1" role="progressbar" aria-valuenow="{{progress}}"
                             aria-valuemin="0" aria-valuemax="100" aria-label="{{{name}}}">

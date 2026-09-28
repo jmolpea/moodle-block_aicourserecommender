@@ -46,7 +46,7 @@ export const init = (pathid) => {
             {key: 'enrolpathconfirm', component: 'block_aicourserecommender'},
         ]);
         try {
-            await Notification.saveCancelPromise(title, root.dataset.enrolsummary, label);
+            await Notification.saveCancelPromise(title, root.querySelector('[data-region="enrol-summary"]').innerHTML, label);
         } catch (cancelled) {
             button.focus();
             return;
@@ -55,7 +55,11 @@ export const init = (pathid) => {
         try {
             const result = await Repository.enrolPath(pathid);
             const {html, js} = await Templates.renderForPromise('block_aicourserecommender/enrol_results',
-                {...result, pageurl: window.location.href});
+                {
+                    ...result,
+                    pageurl: window.location.href,
+                    hasunavailable: result.results.some((item) => item.status === 'unavailable'),
+                });
             const region = root.querySelector('[data-region="enrol-results"]');
             Templates.replaceNodeContents(region, html, js);
             button.hidden = true;

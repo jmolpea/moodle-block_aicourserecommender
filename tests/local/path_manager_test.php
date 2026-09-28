@@ -116,6 +116,10 @@ final class path_manager_test extends \advanced_testcase {
         $statuses = array_column($progress, 'status');
         $this->assertSame(['completed', 'inprogress', 'available', 'available', 'unavailable'], $statuses);
         $this->assertSame([false, false, true, false, false], array_column($progress, 'directenrol'));
+        $reasons = array_column($progress, 'reason');
+        $this->assertSame(['', '', ''], array_slice($reasons, 0, 3), 'Enrolled and available courses have no reason.');
+        $this->assertSame(get_string('reason_key', 'block_aicourserecommender'), $reasons[3]);
+        $this->assertSame(get_string('reason_noself', 'block_aicourserecommender'), $reasons[4]);
 
         $results = (new enrolment_helper())->enrol_path((int) $path->id);
         $bycourse = array_column($results, 'status', 'courseid');
@@ -124,6 +128,17 @@ final class path_manager_test extends \advanced_testcase {
         $this->assertSame('enrolled', $bycourse[$available->id]);
         $this->assertSame('unavailable', $bycourse[$withkey->id]);
         $this->assertSame('unavailable', $bycourse[$closed->id]);
+        $byreason = array_column($results, 'reason', 'courseid');
+        $this->assertSame(get_string('reason_key', 'block_aicourserecommender'), $byreason[$withkey->id]);
+        $this->assertSame('', $byreason[$available->id]);
+
+        // Other reasons: finished course and course without self enrolment.
+        $helper = new enrolment_helper();
+        $ended = $this->getDataGenerator()->create_course(['startdate' => time() - 20 * DAYSECS, 'enddate' => time() - DAYSECS]);
+        $this->assertSame(get_string('reason_ended', 'block_aicourserecommender'), $helper->get_unavailable_reason($ended));
+        $noself = $this->getDataGenerator()->create_course();
+        $DB->delete_records('enrol', ['courseid' => $noself->id, 'enrol' => 'self']);
+        $this->assertSame(get_string('reason_noself', 'block_aicourserecommender'), $helper->get_unavailable_reason($noself));
         $this->assertTrue(is_enrolled(\context_course::instance($available->id), $user));
         $this->assertFalse(is_enrolled(\context_course::instance($withkey->id), $user));
 

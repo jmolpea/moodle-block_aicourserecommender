@@ -42,6 +42,9 @@ class fake_ai_client extends ai_client {
     /** @var bool Whether image generation is available. */
     public bool $imageavailable = true;
 
+    /** @var string|null When set, image generation fails with this provider error. */
+    public ?string $imageerror = null;
+
     /** @var bool|null Policy status; null uses the real status. PHPUnit tests assume it was accepted. */
     public ?bool $policyaccepted = true;
 
@@ -75,6 +78,10 @@ class fake_ai_client extends ai_client {
     public function generate_image(string $prompt, int $userid, ?int $contextid = null): array {
         $start = microtime(true);
         $this->prompts[] = $prompt;
+        if ($this->imageerror !== null) {
+            $this->log($userid, self::CALL_IMAGE, false, $this->imageerror, $start, 0);
+            return ['success' => false, 'file' => null, 'error' => $this->imageerror];
+        }
         $fs = get_file_storage();
         $draftitemid = file_get_unused_draft_itemid();
         $file = $fs->create_file_from_string([

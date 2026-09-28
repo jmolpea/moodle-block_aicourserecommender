@@ -83,6 +83,7 @@ class enrol_path extends external_api {
                 'name' => new external_value(PARAM_RAW, 'Formatted course name'),
                 'status' => new external_value(PARAM_ALPHA, 'enrolled, already or unavailable'),
                 'statuslabel' => new external_value(PARAM_TEXT, 'Status as text'),
+                'reason' => new external_value(PARAM_TEXT, 'Why the user could not be enrolled, empty otherwise'),
             ])),
         ]);
     }

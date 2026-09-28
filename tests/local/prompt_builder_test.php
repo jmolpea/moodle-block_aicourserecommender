@@ -105,6 +105,19 @@ final class prompt_builder_test extends \advanced_testcase {
         $this->assertStringContainsString('"en" (English), "es" (Spanish)', $prompt);
     }
 
+    public function test_image_prompt_uses_corporate_style(): void {
+        $this->resetAfterTest();
+        $default = prompt_builder::build_image_prompt('Data path', 'Learn data');
+        $this->assertStringContainsString(prompt_builder::DEFAULT_IMAGE_STYLE, $default);
+        $this->assertStringContainsString('No text, no letters, no logos', $default);
+
+        set_config('imagestyleprompt', 'Isometric 3D, brand colours #0F6CBF and orange', 'block_aicourserecommender');
+        $corporate = prompt_builder::build_image_prompt('Data path', 'Learn data');
+        $this->assertStringContainsString('Visual style: Isometric 3D, brand colours #0F6CBF and orange', $corporate);
+        $this->assertStringNotContainsString(prompt_builder::DEFAULT_IMAGE_STYLE, $corporate);
+        $this->assertStringContainsString('No text, no letters, no logos', $corporate);
+    }
+
     public function test_summary_prompt_is_english_and_short(): void {
         $prompt = prompt_builder::build_summary_prompt(['id' => 5, 'name' => 'Course', 'description' => 'Text']);
         $this->assertStringContainsString('Write in English, maximum 80 words', $prompt);
