@@ -41,6 +41,7 @@ class profile_collector {
     public static function collect(int $userid): array {
         global $CFG;
         require_once($CFG->dirroot . '/user/profile/lib.php');
+        require_once($CFG->libdir . '/filelib.php');
 
         $user = \core_user::get_user($userid, '*', MUST_EXIST);
         $context = \context_user::instance($userid);

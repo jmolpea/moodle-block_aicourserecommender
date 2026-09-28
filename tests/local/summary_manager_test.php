@@ -106,6 +106,17 @@ final class summary_manager_test extends \advanced_testcase {
         $this->assertSame(0, generate_summaries::run(10));
     }
 
+    public function test_task_stops_at_provider_rate_limit(): void {
+        for ($i = 0; $i < 5; $i++) {
+            $this->getDataGenerator()->create_course();
+        }
+        $this->ai->responses = ['Summary one.', fake_ai_client::RATE_LIMITED];
+        $this->expectOutputRegex('/rate limit was reached/');
+        $this->assertSame(1, generate_summaries::run(10));
+        // One success and one rejected call: the other three courses were not attempted.
+        $this->assertCount(2, $this->ai->prompts);
+    }
+
     public function test_observers_queue_tasks_and_clean_up(): void {
         global $DB;
         $this->setAdminUser();

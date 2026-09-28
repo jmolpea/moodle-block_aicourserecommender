@@ -57,13 +57,19 @@ class generate_summaries extends \core\task\scheduled_task {
             mtrace('AI text generation is not available, or the limit is 0. Nothing to do.');
             return 0;
         }
+        $client = \core\di::get(ai_client::class);
         $done = 0;
         foreach (summary_manager::get_courses_needing_summary($limit) as $courseid) {
             if (summary_manager::update_course($courseid)) {
                 $done++;
                 mtrace("Summary generated for course {$courseid}.");
-            } else {
-                mtrace("Summary not generated for course {$courseid}.");
+                continue;
+            }
+            mtrace("Summary not generated for course {$courseid}.");
+            // The provider rate limit applies per user and per hour: the remaining courses wait for the next run.
+            if ($client->is_rate_limited()) {
+                mtrace('The AI provider rate limit was reached. The remaining summaries will be generated in the next runs.');
+                break;
             }
         }
         return $done;

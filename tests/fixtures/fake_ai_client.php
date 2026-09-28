@@ -30,6 +30,9 @@ use block_aicourserecommender\local\ai_client;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class fake_ai_client extends ai_client {
+    /** @var string Queue this answer to simulate the rate limit of the provider. */
+    public const RATE_LIMITED = '__ratelimited__';
+
     /** @var array Queued answers: a string is a successful answer, false a failure. */
     public array $responses = [];
 
@@ -68,8 +71,8 @@ class fake_ai_client extends ai_client {
         $start = microtime(true);
         $this->prompts[] = $prompt;
         $answer = $this->responses ? array_shift($this->responses) : self::auto_answer($prompt);
-        $success = $answer !== false;
-        $error = $success ? '' : 'Fake failure';
+        $success = $answer !== false && $answer !== self::RATE_LIMITED;
+        $error = $success ? '' : ($answer === self::RATE_LIMITED ? 'User rate limit exceeded' : 'Fake failure');
         $this->log($userid, $calltype, $success, $error, $start, $success ? 42 : 0);
         return ['success' => $success, 'text' => $success ? (string) $answer : '', 'error' => $error];
     }

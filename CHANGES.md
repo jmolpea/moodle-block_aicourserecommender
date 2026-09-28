@@ -6,6 +6,8 @@
 - "Enrol me in the whole path" explains, course by course, why a course could not be enrolled in.
 - Corporate image style setting for AI generated path images.
 - Path AI actions show the error returned by the AI provider.
+- Fix: the summary task failed in cron (file library not loaded).
+- The summary task stops when the provider rate limit is reached and continues in the next run.
 
 ## 1.0.0-beta (2026092800)
 

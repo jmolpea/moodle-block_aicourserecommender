@@ -45,6 +45,21 @@ class ai_client {
     /** @var string Log table. */
     public const LOG_TABLE = 'block_aicourserecommender_ailog';
 
+    /** @var int Error code of the last text generation, 0 when it succeeded. */
+    protected int $lasterrorcode = 0;
+
+    /** @var string Error message of the last call, empty when it succeeded. */
+    protected string $lasterror = '';
+
+    /**
+     * Whether the last call was rejected by the rate limit of the provider (HTTP 429, per user or site wide).
+     *
+     * @return bool
+     */
+    public function is_rate_limited(): bool {
+        return $this->lasterrorcode === 429 || stripos($this->lasterror, 'rate limit') !== false;
+    }
+
     /**
      * Returns the core AI manager.
      *
@@ -111,11 +126,13 @@ class ai_client {
         $start = microtime(true);
         $text = '';
         $tokens = 0;
+        $this->lasterrorcode = 0;
         try {
             $action = new generate_text(contextid: $contextid, userid: $userid, prompttext: $prompt);
             $response = $this->get_manager()->process_action($action);
             $success = $response->get_success();
             $error = $success ? '' : $this->get_error($response);
+            $this->lasterrorcode = $success ? 0 : $response->get_errorcode();
             if ($success) {
                 $data = $response->get_response_data();
                 $text = (string) ($data['generatedcontent'] ?? '');
@@ -196,6 +213,7 @@ class ai_client {
      */
     protected function log(int $userid, string $calltype, bool $success, string $error, float $start, int $tokens): void {
         global $DB;
+        $this->lasterror = $success ? '' : $error;
         $DB->insert_record(self::LOG_TABLE, (object) [
             'userid' => $userid,
             'calltype' => $calltype,

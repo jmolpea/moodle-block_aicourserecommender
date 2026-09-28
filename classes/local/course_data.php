@@ -42,7 +42,9 @@ class course_data {
      * @return array<int, array>
      */
     public static function get_metadata(array $courseids, int $descriptionlength = self::SUMMARY_SOURCE_LENGTH): array {
-        global $DB;
+        global $CFG, $DB;
+        // Not loaded by default in cron and CLI scripts.
+        require_once($CFG->libdir . '/filelib.php');
         $courseids = array_values(array_unique(array_map('intval', $courseids)));
         if (!$courseids) {
             return [];
