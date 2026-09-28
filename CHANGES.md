@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0-beta3 (2026092901)
+
+- Same code as 1.0.0-beta2. New version number for the Moodle plugins directory submission.
+
 ## 1.0.0-beta2 (2026092900)
 
 - First-use wizard: visual steps, one question per card, single acceptance of the notice and the AI policy, summary to edit answers.
