@@ -21,6 +21,199 @@
 
 /* AI course recommender. Layout adapts to the width of the block container, not the window:
    block.js measures the container with a ResizeObserver and sets aicr-w-md (>= 520px) and aicr-w-lg (>= 900px). */
+.block-aicourserecommender {
+    --aicr-accent: var(--bs-primary, var(--primary, #0f6cbf));
+    --aicr-accent-soft: rgba(15, 108, 191, 0.08);
+    --aicr-radius: 0.75rem;
+}
+
+/* Visually hidden but read by screen readers; does not rely on the theme defining sr-only or visually-hidden. */
+.aicr-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* First use: how it works. */
+.block-aicourserecommender .aicr-intro {
+    background: linear-gradient(135deg, var(--aicr-accent-soft), rgba(240, 173, 78, 0.08));
+    border-radius: var(--aicr-radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.block-aicourserecommender .aicr-intro-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+}
+
+.block-aicourserecommender .aicr-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.block-aicourserecommender.aicr-w-md .aicr-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.block-aicourserecommender .aicr-step {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.block-aicourserecommender.aicr-w-md .aicr-step {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.block-aicourserecommender .aicr-step-icon {
+    flex: 0 0 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: var(--aicr-accent);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.block-aicourserecommender .aicr-step-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.875rem;
+    line-height: 1.35;
+}
+
+/* Question cards. */
+.block-aicourserecommender .aicr-qcard {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--aicr-radius);
+    padding: 1rem;
+    margin: 0 0 0.75rem;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    animation: aicr-fadein 0.25s ease-out;
+}
+
+@keyframes aicr-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+.block-aicourserecommender .aicr-progress-text {
+    color: #6a737b;
+    margin-bottom: 0.25rem;
+}
+
+.block-aicourserecommender .aicr-progress {
+    height: 0.3rem;
+    border-radius: 0.3rem;
+    background: rgba(0, 0, 0, 0.08);
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+}
+
+.block-aicourserecommender .aicr-progress span {
+    display: block;
+    height: 100%;
+    background: var(--aicr-accent);
+    transition: width 0.3s ease;
+}
+
+.block-aicourserecommender .aicr-question-label {
+    font-weight: 600;
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.block-aicourserecommender .aicr-question-help {
+    color: #6a737b;
+    margin-bottom: 0.5rem;
+}
+
+.block-aicourserecommender .aicr-qcard textarea {
+    border-radius: 0.5rem;
+    resize: vertical;
+}
+
+.block-aicourserecommender .aicr-mic {
+    border: 1px solid var(--aicr-accent);
+    color: var(--aicr-accent);
+    border-radius: 2rem;
+    background: #fff;
+    padding: 0.25rem 0.75rem;
+}
+
+.block-aicourserecommender .aicr-nav,
+.block-aicourserecommender .aicr-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.block-aicourserecommender .aicr-nav-spacer {
+    flex: 1 1 auto;
+}
+
+.block-aicourserecommender .aicr-acceptance {
+    padding: 0.75rem 1rem;
+    border-radius: var(--aicr-radius);
+    background: rgba(0, 0, 0, 0.03);
+    font-size: 0.875rem;
+}
+
+.block-aicourserecommender .aicr-conditions-link {
+    margin-left: 1.25rem;
+}
+
+/* Summary of the answers. */
+.block-aicourserecommender .aicr-summary-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.block-aicourserecommender .aicr-summary-item {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--aicr-radius);
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.block-aicourserecommender .aicr-summary-question {
+    color: #6a737b;
+    margin-bottom: 0.25rem;
+}
+
+.block-aicourserecommender .aicr-summary-answer {
+    margin: 0 0 0.25rem;
+    white-space: pre-line;
+}
+
+.block-aicourserecommender .aicr-summary-answer.aicr-empty {
+    font-style: italic;
+    color: #6a737b;
+}
+
 .block-aicourserecommender .aicr-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -133,7 +326,8 @@
 
 @media (prefers-reduced-motion: reduce) {
     .block-aicourserecommender .aicr-mic.aicr-recording .aicr-mic-icon,
-    .block-aicourserecommender .aicr-skeleton > div {
+    .block-aicourserecommender .aicr-skeleton > div,
+    .block-aicourserecommender .aicr-qcard {
         animation: none;
     }
 }
@@ -267,4 +461,12 @@
 
 .aicr-totals dd {
     margin: 0;
+}
+
+/* Conditions dialogue: the core AI policy text uses large headings. */
+.aicr-conditions-policy h2,
+.aicr-conditions-policy h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1rem;
 }

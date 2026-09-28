@@ -80,7 +80,8 @@ export const init = async(root, lang, onchange) => {
                 return;
             }
             stopActive();
-            const textarea = document.getElementById(button.dataset.target);
+            const textarea = button.closest('[data-region="question-card"], [data-region="summary-edit"]')
+                .querySelector('textarea');
             const recognition = new Recognition();
             recognition.lang = lang;
             recognition.continuous = true;

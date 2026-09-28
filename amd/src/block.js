@@ -17,7 +17,8 @@
  * Controller of the AI course recommender block.
  *
  * The page is rendered without calling the AI; this module loads the recommendations through AJAX and switches
- * between the states of the block: consent, AI policy, questionnaire, loading, results, no results and error.
+ * between the states of the block: wizard (first use), summary (change interests), loading, results, no results
+ * and error.
  *
  * @module     block_aicourserecommender/block
  * @copyright  2026 Pluginia <https://pluginia.es>
@@ -28,13 +29,17 @@ import * as Repository from './repository';
 import * as Dictation from './dictation';
 import Templates from 'core/templates';
 import Notification from 'core/notification';
+import Modal from 'core/modal';
 import Policy from 'core_ai/policy';
 import {getString, getStrings} from 'core/str';
 
-const STATES = ['consent', 'aipolicy', 'questionnaire', 'loading', 'results', 'noresults', 'error'];
+const STATES = ['wizard', 'summary', 'loading', 'results', 'noresults', 'error'];
+
+/** @type {Number} Maximum time to wait for the click log before following a link. */
+const CLICK_TIMEOUT = 700;
 
 /**
- * Escapes text for use inside HTML (the confirmation dialogue body is HTML).
+ * Escapes text for use inside HTML (dialogue bodies are HTML).
  *
  * @param {String} text Text.
  * @returns {String}
@@ -44,9 +49,6 @@ const escapeHtml = (text) => {
     div.textContent = text || '';
     return div.innerHTML;
 };
-
-/** @type {Number} Maximum time to wait for the click log before following a link. */
-const CLICK_TIMEOUT = 700;
 
 /**
  * Block controller.
@@ -62,6 +64,7 @@ class RecommenderBlock {
         this.uniqid = root.id;
         this.offsets = {course: 0, path: 0};
         this.loading = false;
+        this.card = 1;
     }
 
     /**
@@ -111,6 +114,7 @@ class RecommenderBlock {
         this.observeWidth();
         this.registerEvents();
         this.setupCounters();
+        this.refreshSummary();
         Dictation.init(this.root, this.root.dataset.speechlang || document.documentElement.lang, (textarea) => {
             this.updateCounter(textarea);
         });
@@ -163,17 +167,19 @@ class RecommenderBlock {
      * Registers the event listeners (delegated).
      */
     registerEvents() {
-        const checkbox = this.region('consent-checkbox');
-        if (checkbox) {
-            checkbox.addEventListener('change', () => {
-                this.root.querySelector('[data-action="start"]').disabled = !checkbox.checked;
-            });
-        }
         const form = this.region('questionnaire-form');
         if (form) {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
-                this.saveAnswers();
+                this.submitWizard();
+            });
+        }
+        const checkbox = this.region('accept-checkbox');
+        if (checkbox) {
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    this.hideFormError();
+                }
             });
         }
         this.root.addEventListener('click', (e) => {
@@ -183,26 +189,34 @@ class RecommenderBlock {
             }
             const card = target.closest('[data-region="card"]');
             switch (target.dataset.action) {
-                case 'start':
-                    this.acceptConsent(target);
+                case 'next':
+                case 'skip':
+                    this.goToCard(this.card + 1);
                     break;
-                case 'accept-policy':
-                    this.acceptPolicy(target);
+                case 'back':
+                    this.goToCard(this.card - 1);
                     break;
-                case 'decline-policy':
-                    this.region('policy-declined').hidden = false;
-                    break;
-                case 'cancel-edit':
-                    this.load(false);
+                case 'show-conditions':
+                    this.showConditions();
                     break;
                 case 'change-interests':
-                    this.openQuestionnaire();
+                    this.changeInterests();
+                    break;
+                case 'edit-answer':
+                    this.editAnswer(target.closest('[data-region="summary-item"]'));
+                    break;
+                case 'cancel-answer':
+                    this.closeEditor(target.closest('[data-region="summary-item"]'));
+                    break;
+                case 'save-answer':
+                    this.saveEditedAnswer(target, target.closest('[data-region="summary-item"]'));
+                    break;
+                case 'back-to-results':
+                case 'retry':
+                    this.load(false);
                     break;
                 case 'delete-data':
                     this.deleteData(target);
-                    break;
-                case 'retry':
-                    this.load(false);
                     break;
                 case 'more':
                     this.showMore(target);
@@ -224,59 +238,178 @@ class RecommenderBlock {
     }
 
     /**
-     * Next state after consent or policy acceptance.
+     * Whether the learner must accept the conditions before continuing.
+     *
+     * @returns {Boolean}
      */
-    next() {
-        if (this.root.dataset.policyaccepted !== '1') {
-            this.show('aipolicy');
-            this.focusFirst('aipolicy');
-        } else if (this.root.dataset.hasanswers === '1') {
-            this.load(false);
-        } else {
-            this.openQuestionnaire();
+    needsAcceptance() {
+        return this.root.dataset.needsconsent === '1' || this.root.dataset.policyaccepted !== '1';
+    }
+
+    /**
+     * Shows a validation message under the questions.
+     *
+     * @param {String} message Message.
+     */
+    showFormError(message) {
+        const error = this.region('form-error');
+        error.textContent = message;
+        error.hidden = false;
+    }
+
+    /**
+     * Hides the validation message.
+     */
+    hideFormError() {
+        this.region('form-error').hidden = true;
+    }
+
+    /**
+     * Checks that the conditions are accepted; otherwise explains it and moves the focus to the checkbox.
+     *
+     * @returns {Promise<Boolean>}
+     */
+    async checkAcceptance() {
+        const checkbox = this.region('accept-checkbox');
+        if (!this.needsAcceptance() || checkbox.checked) {
+            return true;
+        }
+        this.showFormError(await getString('acceptrequired', 'block_aicourserecommender'));
+        checkbox.focus();
+        return false;
+    }
+
+    /**
+     * Shows one question card.
+     *
+     * @param {Number} number Card number, starting at 1.
+     */
+    async goToCard(number) {
+        const cards = Array.from(this.root.querySelectorAll('[data-region="question-card"]'));
+        if (number < 1 || number > cards.length) {
+            return;
+        }
+        if (this.card >= 1 && number > this.card && !(await this.checkAcceptance())) {
+            return;
+        }
+        this.hideFormError();
+        this.card = number;
+        cards.forEach((card) => {
+            card.hidden = parseInt(card.dataset.number, 10) !== number;
+        });
+        const current = cards[number - 1];
+        this.announce(current.querySelector('.aicr-progress-text').textContent);
+        current.querySelector('textarea').focus();
+    }
+
+    /**
+     * Opens the conditions (privacy notice and AI usage policy of the site) in a dialogue.
+     */
+    async showConditions() {
+        const title = await getString('conditionstitle', 'block_aicourserecommender');
+        const modal = await Modal.create({
+            title,
+            body: this.region('conditions').innerHTML,
+            show: true,
+            removeOnClose: true,
+        });
+        modal.getRoot().on('modal:hidden', () => {
+            this.root.querySelector('[data-action="show-conditions"]').focus();
+        });
+    }
+
+    /**
+     * Opens the wizard at the first card.
+     */
+    openWizard() {
+        this.region('acceptance').hidden = !this.needsAcceptance();
+        this.show('wizard');
+        this.card = 0;
+        this.goToCard(1);
+    }
+
+    /**
+     * "Change my interests": the summary of the answers, or the wizard when there are none.
+     */
+    changeInterests() {
+        if (this.root.dataset.hasanswers !== '1' || this.needsAcceptance()) {
+            this.openWizard();
+            return;
+        }
+        this.root.querySelectorAll('[data-region="summary-item"]').forEach((item) => this.closeEditor(item));
+        this.show('summary');
+        const first = this.region('summary').querySelector('[data-action="edit-answer"]');
+        if (first) {
+            first.focus();
         }
     }
 
     /**
-     * Moves the focus to the first focusable element of a region.
+     * Wizard textarea of a question slot.
      *
-     * @param {String} name Region name.
+     * @param {String} slot Question slot.
+     * @returns {HTMLTextAreaElement}
      */
-    focusFirst(name) {
-        const element = this.region(name)?.querySelector('textarea, button:not([hidden]), a[href], input');
-        if (element) {
-            element.focus();
+    answerField(slot) {
+        return this.root.querySelector(`textarea[data-slot="${slot}"]`);
+    }
+
+    /**
+     * Opens the inline editor of one answer in the summary.
+     *
+     * @param {HTMLElement} item Summary item.
+     */
+    editAnswer(item) {
+        const textarea = item.querySelector('[data-region="summary-textarea"]');
+        textarea.value = this.answerField(item.dataset.slot).value;
+        item.querySelector('[data-region="summary-view"]').hidden = true;
+        item.querySelector('[data-region="summary-edit"]').hidden = false;
+        textarea.focus();
+    }
+
+    /**
+     * Closes the inline editor of one answer.
+     *
+     * @param {HTMLElement} item Summary item.
+     */
+    closeEditor(item) {
+        const wasopen = !item.querySelector('[data-region="summary-edit"]').hidden;
+        item.querySelector('[data-region="summary-edit"]').hidden = true;
+        item.querySelector('[data-region="summary-view"]').hidden = false;
+        if (wasopen) {
+            item.querySelector('[data-action="edit-answer"]').focus();
         }
     }
 
     /**
-     * Saves the consent.
-     *
-     * @param {HTMLButtonElement} button Start button.
+     * Updates the summary texts from the wizard answers.
      */
-    async acceptConsent(button) {
+    refreshSummary() {
+        this.root.querySelectorAll('[data-region="summary-item"]').forEach((item) => {
+            const answer = this.answerField(item.dataset.slot).value.trim();
+            const view = item.querySelector('[data-region="summary-answer"]');
+            view.textContent = answer || view.dataset.empty;
+            view.classList.toggle('aicr-empty', !answer);
+        });
+    }
+
+    /**
+     * Saves one edited answer and loads new recommendations.
+     *
+     * @param {HTMLButtonElement} button Save button.
+     * @param {HTMLElement} item Summary item.
+     */
+    async saveEditedAnswer(button, item) {
+        const field = this.answerField(item.dataset.slot);
+        const previous = field.value;
+        field.value = item.querySelector('[data-region="summary-textarea"]').value;
         button.disabled = true;
         try {
-            await Repository.saveConsent();
-            this.next();
+            await this.saveAnswers();
+            this.refreshSummary();
+            await this.load(false);
         } catch (error) {
-            button.disabled = false;
-            Notification.exception(error);
-        }
-    }
-
-    /**
-     * Accepts the AI usage policy of the site with the core flow.
-     *
-     * @param {HTMLButtonElement} button Accept button.
-     */
-    async acceptPolicy(button) {
-        button.disabled = true;
-        try {
-            await Policy.acceptPolicy();
-            this.root.dataset.policyaccepted = '1';
-            this.next();
-        } catch (error) {
+            field.value = previous;
             Notification.exception(error);
         } finally {
             button.disabled = false;
@@ -284,88 +417,55 @@ class RecommenderBlock {
     }
 
     /**
-     * Shows the questionnaire with the current answers.
-     */
-    openQuestionnaire() {
-        this.region('form-error').hidden = true;
-        const noanswers = this.root.dataset.hasanswers !== '1';
-        this.root.querySelector('[data-action="cancel-edit"]').hidden = noanswers;
-        this.region('questionnaire').querySelector('[data-action="delete-data"]').hidden = noanswers;
-        this.show('questionnaire');
-        this.focusFirst('questionnaire');
-    }
-
-    /**
-     * Deletes the data of the learner after confirmation and starts again.
+     * Collects the answers of the wizard.
      *
-     * @param {HTMLButtonElement} button Delete button.
+     * @returns {Array} List of {slot, answer}.
      */
-    async deleteData(button) {
-        const [title, question, label, done] = await getStrings([
-            {key: 'deletemydata', component: 'block_aicourserecommender'},
-            {key: 'deletemydataconfirm', component: 'block_aicourserecommender'},
-            {key: 'delete', component: 'core'},
-            {key: 'deletemydatadone', component: 'block_aicourserecommender'},
-        ]);
-        try {
-            await Notification.saveCancelPromise(title, question, label);
-        } catch (cancelled) {
-            button.focus();
-            return;
-        }
-        try {
-            await Repository.deleteMyData();
-        } catch (error) {
-            Notification.exception(error);
-            return;
-        }
-        this.root.dataset.hasanswers = '0';
-        this.root.querySelectorAll('textarea[data-slot]').forEach((textarea) => {
-            textarea.value = '';
-            this.updateCounter(textarea);
-        });
-        this.region('results').innerHTML = '';
-        if (this.root.dataset.requireconsent === '1') {
-            this.region('consent-checkbox').checked = false;
-            this.root.querySelector('[data-action="start"]').disabled = true;
-            this.show('consent');
-            this.focusFirst('consent');
-        } else {
-            this.openQuestionnaire();
-        }
-        this.announce(done);
+    collectAnswers() {
+        return Array.from(this.root.querySelectorAll('textarea[data-slot]')).map((textarea) => ({
+            slot: parseInt(textarea.dataset.slot, 10),
+            answer: textarea.value.trim(),
+        }));
     }
 
     /**
-     * Saves the answers and loads new recommendations.
+     * Saves the answers of the wizard.
+     *
+     * @returns {Promise}
      */
-    async saveAnswers() {
-        const errorregion = this.region('form-error');
-        const answers = [];
-        let filled = 0;
-        this.root.querySelectorAll('textarea[data-slot]').forEach((textarea) => {
-            const answer = textarea.value.trim();
-            if (answer) {
-                filled++;
-            }
-            answers.push({slot: parseInt(textarea.dataset.slot, 10), answer});
-        });
-        if (!filled) {
-            errorregion.textContent = await getString('erroremptyanswers', 'block_aicourserecommender');
-            errorregion.hidden = false;
-            errorregion.focus();
+    saveAnswers() {
+        return Repository.saveAnswers(this.collectAnswers());
+    }
+
+    /**
+     * Last card: records the acceptance, saves the answers and loads the recommendations.
+     */
+    async submitWizard() {
+        if (!this.collectAnswers().some((a) => a.answer !== '')) {
+            this.showFormError(await getString('erroremptyanswers', 'block_aicourserecommender'));
+            this.goToCard(1);
             return;
         }
-        errorregion.hidden = true;
+        if (!(await this.checkAcceptance())) {
+            return;
+        }
         const button = this.root.querySelector('[data-action="save-answers"]');
         button.disabled = true;
         try {
-            await Repository.saveAnswers(answers);
+            if (this.root.dataset.needsconsent === '1') {
+                await Repository.saveConsent();
+                this.root.dataset.needsconsent = '0';
+            }
+            if (this.root.dataset.policyaccepted !== '1') {
+                await Policy.acceptPolicy();
+                this.root.dataset.policyaccepted = '1';
+            }
+            await this.saveAnswers();
             this.root.dataset.hasanswers = '1';
+            this.refreshSummary();
             await this.load(false);
         } catch (error) {
-            errorregion.textContent = error.message || await getString('erroraifailed', 'block_aicourserecommender');
-            errorregion.hidden = false;
+            this.showFormError(error.message || await getString('erroraifailed', 'block_aicourserecommender'));
         } finally {
             button.disabled = false;
         }
@@ -402,12 +502,11 @@ class RecommenderBlock {
         switch (result.status) {
             case 'questionnaire':
                 this.root.dataset.hasanswers = '0';
-                this.openQuestionnaire();
+                this.openWizard();
                 return;
             case 'aipolicy':
                 this.root.dataset.policyaccepted = '0';
-                this.show('aipolicy');
-                this.focusFirst('aipolicy');
+                this.openWizard();
                 return;
             case 'noresults':
                 this.show('noresults');
@@ -442,6 +541,45 @@ class RecommenderBlock {
         this.region('error-message').textContent = message || await getString('erroraifailed', 'block_aicourserecommender');
         this.show('error');
         this.announce(this.region('error-message').textContent);
+    }
+
+    /**
+     * Deletes the data of the learner after confirmation and starts again.
+     *
+     * @param {HTMLButtonElement} button Delete button.
+     */
+    async deleteData(button) {
+        const [title, question, label, done] = await getStrings([
+            {key: 'deletemydata', component: 'block_aicourserecommender'},
+            {key: 'deletemydataconfirm', component: 'block_aicourserecommender'},
+            {key: 'delete', component: 'core'},
+            {key: 'deletemydatadone', component: 'block_aicourserecommender'},
+        ]);
+        try {
+            await Notification.saveCancelPromise(title, question, label);
+        } catch (cancelled) {
+            button.focus();
+            return;
+        }
+        try {
+            await Repository.deleteMyData();
+        } catch (error) {
+            Notification.exception(error);
+            return;
+        }
+        this.root.dataset.hasanswers = '0';
+        if (this.root.dataset.requireconsent === '1') {
+            this.root.dataset.needsconsent = '1';
+        }
+        this.root.querySelectorAll('textarea[data-slot]').forEach((textarea) => {
+            textarea.value = '';
+            this.updateCounter(textarea);
+        });
+        this.region('accept-checkbox').checked = false;
+        this.region('results').innerHTML = '';
+        this.refreshSummary();
+        this.openWizard();
+        this.announce(done);
     }
 
     /**

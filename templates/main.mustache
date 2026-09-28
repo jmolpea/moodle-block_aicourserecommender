@@ -17,16 +17,22 @@
 {{!
     @template block_aicourserecommender/main
 
-    Main content of the AI course recommender block. Each state is a region; JavaScript switches between them.
+    Main content of the AI course recommender block. Each state is a region; JavaScript switches between them:
+    wizard (first use: how it works, one question per card and acceptance), summary (edit one answer), loading,
+    results, noresults and error.
 
     Context variables required for this template:
     * uniqid - Unique id of the container
-    * state - Initial state: consent, aipolicy, questionnaire or loading
-    * isconsent, isaipolicy, isquestionnaire, isloading - Initial state flags
+    * state - Initial state: wizard or loading
+    * iswizard, isloading - Initial state flags
     * policyaccepted - Whether the AI policy of the site is accepted
+    * needsconsent - Whether the privacy notice must still be accepted
+    * showacceptance - Whether the acceptance checkbox is shown
+    * showconsenttext - Whether the privacy notice is part of the conditions
     * hasanswers - Whether the user has saved answers
     * consenttext - Privacy notice (HTML)
-    * questions - Active questions
+    * questions - Active questions with number, progress and answer
+    * totalquestions - Number of questions
     * maxlength - Maximum answer length
     * speechlang - BCP 47 language for dictation
     * catalogurl - Course catalogue URL
@@ -35,17 +41,24 @@
     Example context (json):
     {
         "uniqid": "aicr123",
-        "state": "questionnaire",
-        "isconsent": false,
-        "isaipolicy": false,
-        "isquestionnaire": true,
+        "state": "wizard",
+        "iswizard": true,
         "isloading": false,
-        "policyaccepted": true,
+        "policyaccepted": false,
+        "needsconsent": true,
+        "showacceptance": true,
+        "showconsenttext": true,
         "hasanswers": false,
         "consenttext": "<p>We use AI to recommend courses.</p>",
         "questions": [
-            {"slot": 1, "text": "What is your role?", "help": "For example: teacher", "hashelp": true, "answer": ""}
+            {"slot": 1, "number": 1, "text": "What is your role?", "help": "For example: teacher", "hashelp": true,
+             "answer": "", "hasanswer": false, "isfirst": true, "islast": false, "progress": "Question 1 of 2",
+             "percent": 50},
+            {"slot": 2, "number": 2, "text": "What do you want to learn?", "help": "", "hashelp": false,
+             "answer": "", "hasanswer": false, "isfirst": false, "islast": true, "progress": "Question 2 of 2",
+             "percent": 100}
         ],
+        "totalquestions": 2,
         "maxlength": 1000,
         "speechlang": "en",
         "catalogurl": "https://example.com/course/index.php",
@@ -54,83 +67,157 @@
 }}
 <div class="block-aicourserecommender" id="{{uniqid}}" data-region="aicr-root" data-state="{{state}}"
     data-policyaccepted="{{#policyaccepted}}1{{/policyaccepted}}{{^policyaccepted}}0{{/policyaccepted}}"
+    data-needsconsent="{{#needsconsent}}1{{/needsconsent}}{{^needsconsent}}0{{/needsconsent}}"
     data-hasanswers="{{#hasanswers}}1{{/hasanswers}}{{^hasanswers}}0{{/hasanswers}}"
     data-speechlang="{{speechlang}}"
     data-requireconsent="{{#requireconsent}}1{{/requireconsent}}{{^requireconsent}}0{{/requireconsent}}">
-    <div class="sr-only visually-hidden" aria-live="polite" aria-atomic="true" data-region="live"></div>
+    <div class="aicr-sr" aria-live="polite" aria-atomic="true" data-region="live"></div>
 
-    <section data-region="consent" aria-labelledby="{{uniqid}}-consent-title" {{^isconsent}}hidden{{/isconsent}}>
-        <h3 id="{{uniqid}}-consent-title" class="h6">{{#str}} consenttitle, block_aicourserecommender {{/str}}</h3>
-        <div class="aicr-consent-text small">{{{consenttext}}}</div>
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="{{uniqid}}-consent" data-region="consent-checkbox">
-            <label class="form-check-label" for="{{uniqid}}-consent">
-                {{#str}} consentaccept, block_aicourserecommender {{/str}}
-            </label>
+    <div data-region="wizard" {{^iswizard}}hidden{{/iswizard}}>
+        <div class="aicr-intro" data-region="intro">
+            <p class="aicr-intro-title">{{#str}} introtitle, block_aicourserecommender {{/str}}</p>
+            <ol class="aicr-steps">
+                <li class="aicr-step">
+                    <span class="aicr-step-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="22" height="22" focusable="false"><path fill="currentColor"
+                            d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm3 5v2h10V9H7zm0
+                            4v2h7v-2H7z"/></svg>
+                    </span>
+                    <span class="aicr-step-text">
+                        <strong>{{#str}} introstep1, block_aicourserecommender {{/str}}</strong>
+                        <span>{{#str}} introstep1text, block_aicourserecommender {{/str}}</span>
+                    </span>
+                </li>
+                <li class="aicr-step">
+                    <span class="aicr-step-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="22" height="22" focusable="false"><path fill="currentColor"
+                            d="M10 3l1.6 4.4L16 9l-4.4 1.6L10 15l-1.6-4.4L4 9l4.4-1.6L10 3zm8 9l.9 2.1L21 15l-2.1.9L18
+                            18l-.9-2.1L15 15l2.1-.9L18 12zm-3 6l.6 1.4L17 20l-1.4.6L15 22l-.6-1.4L13 20l1.4-.6L15 18z"/></svg>
+                    </span>
+                    <span class="aicr-step-text">
+                        <strong>{{#str}} introstep2, block_aicourserecommender {{/str}}</strong>
+                        <span>{{#str}} introstep2text, block_aicourserecommender {{/str}}</span>
+                    </span>
+                </li>
+                <li class="aicr-step">
+                    <span class="aicr-step-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="22" height="22" focusable="false"><path fill="currentColor"
+                            d="M12 3L1 9l11 6 9-4.9V17h2V9L12 3zM5 13.2V17c0 1.7 3.1 3 7 3s7-1.3 7-3v-3.8L12 17l-7-3.8z"/></svg>
+                    </span>
+                    <span class="aicr-step-text">
+                        <strong>{{#str}} introstep3, block_aicourserecommender {{/str}}</strong>
+                        <span>{{#str}} introstep3text, block_aicourserecommender {{/str}}</span>
+                    </span>
+                </li>
+            </ol>
         </div>
-        <button type="button" class="btn btn-primary" data-action="start" disabled>
-            {{#str}} start, block_aicourserecommender {{/str}}
-        </button>
-    </section>
 
-    <section data-region="aipolicy" aria-labelledby="{{uniqid}}-policy-title" {{^isaipolicy}}hidden{{/isaipolicy}}>
-        <h3 id="{{uniqid}}-policy-title" class="h6">{{#str}} aiusagepolicy, core_ai {{/str}}</h3>
-        <div class="aicr-policy-text small">{{#str}} userpolicy, core_ai {{/str}}</div>
-        <div class="aicr-buttons mt-2">
-            <button type="button" class="btn btn-secondary" data-action="decline-policy">
-                {{#str}} declineaipolicy, core_ai {{/str}}
-            </button>
-            <button type="button" class="btn btn-primary" data-action="accept-policy">
-                {{#str}} acceptai, core_ai {{/str}}
-            </button>
-        </div>
-        <p class="small text-muted mt-2" data-region="policy-declined" hidden>
-            {{#str}} policydeclined, block_aicourserecommender {{/str}}
-        </p>
-    </section>
-
-    <section data-region="questionnaire" aria-labelledby="{{uniqid}}-q-title" {{^isquestionnaire}}hidden{{/isquestionnaire}}>
-        <h3 id="{{uniqid}}-q-title" class="h6">{{#str}} questionnairetitle, block_aicourserecommender {{/str}}</h3>
-        <p class="small text-muted">{{#str}} questionnaireintro, block_aicourserecommender {{/str}}</p>
         <form data-region="questionnaire-form" novalidate>
             {{#questions}}
-            <div class="aicr-question mb-3">
-                <label for="{{uniqid}}-q{{slot}}" class="aicr-question-label">{{{text}}}</label>
+            <fieldset class="aicr-qcard" data-region="question-card" data-number="{{number}}" {{^isfirst}}hidden{{/isfirst}}>
+                <div class="aicr-progress-text small" id="{{uniqid}}-q{{slot}}-progress">{{progress}}</div>
+                <div class="aicr-progress" aria-hidden="true"><span style="width: {{percent}}%"></span></div>
+                <label for="{{uniqid}}-q{{slot}}" id="{{uniqid}}-q{{slot}}-label" class="aicr-question-label"
+                    tabindex="-1">{{{text}}}</label>
                 {{#hashelp}}
-                <div id="{{uniqid}}-q{{slot}}-help" class="aicr-question-help small text-muted mb-1">{{{help}}}</div>
+                <div id="{{uniqid}}-q{{slot}}-help" class="aicr-question-help small">{{{help}}}</div>
                 {{/hashelp}}
                 <textarea class="form-control" id="{{uniqid}}-q{{slot}}" name="q{{slot}}" data-slot="{{slot}}"
                     rows="3" maxlength="{{maxlength}}"
-                    aria-describedby="{{#hashelp}}{{uniqid}}-q{{slot}}-help {{/hashelp}}{{uniqid}}-q{{slot}}-count">{{answer}}</textarea>
+                    aria-describedby="{{uniqid}}-q{{slot}}-progress {{#hashelp}}{{uniqid}}-q{{slot}}-help {{/hashelp}}{{uniqid}}-q{{slot}}-count">{{answer}}</textarea>
                 <div class="aicr-answer-tools">
-                    <button type="button" class="btn btn-sm btn-outline-secondary aicr-mic" data-action="dictate"
-                        data-target="{{uniqid}}-q{{slot}}" aria-pressed="false" hidden>
-                        <svg class="aicr-mic-icon" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16">
-                            <path fill="currentColor" d="M8 10a2.5 2.5 0 0 0 2.5-2.5v-4a2.5 2.5 0 0 0-5 0v4A2.5 2.5 0 0 0 8 10zm4-2.5
-                                a.5.5 0 0 1 1 0A5 5 0 0 1 8.5 12.47V14h2a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1h2v-1.53A5 5 0 0 1 3 7.5
-                                a.5.5 0 0 1 1 0 4 4 0 0 0 8 0z"/>
-                        </svg>
-                        <span data-region="mic-label">{{#str}} dictate, block_aicourserecommender {{/str}}</span>
-                    </button>
+                    {{> block_aicourserecommender/mic_button }}
                     <span class="small text-muted aicr-counter" id="{{uniqid}}-q{{slot}}-count" data-region="counter"
                         data-max="{{maxlength}}"></span>
                 </div>
-            </div>
+                <div class="aicr-nav">
+                    {{^isfirst}}
+                    <button type="button" class="btn btn-link aicr-back" data-action="back">
+                        {{#str}} back, block_aicourserecommender {{/str}}
+                    </button>
+                    {{/isfirst}}
+                    <span class="aicr-nav-spacer"></span>
+                    {{^islast}}
+                    <button type="button" class="btn btn-outline-secondary" data-action="skip">
+                        {{#str}} skip, block_aicourserecommender {{/str}}
+                    </button>
+                    <button type="button" class="btn btn-primary" data-action="next">
+                        {{#str}} next, block_aicourserecommender {{/str}}
+                    </button>
+                    {{/islast}}
+                    {{#islast}}
+                    <button type="submit" class="btn btn-primary" data-action="save-answers">
+                        {{#str}} saveanswers, block_aicourserecommender {{/str}}
+                    </button>
+                    {{/islast}}
+                </div>
+            </fieldset>
             {{/questions}}
-            <div class="alert alert-danger" role="alert" tabindex="-1" data-region="form-error" hidden></div>
-            <div class="aicr-buttons">
-                <button type="submit" class="btn btn-primary" data-action="save-answers">
-                    {{#str}} saveanswers, block_aicourserecommender {{/str}}
-                </button>
-                <button type="button" class="btn btn-link" data-action="cancel-edit" {{^hasanswers}}hidden{{/hasanswers}}>
-                    {{#str}} cancel {{/str}}
-                </button>
-                <button type="button" class="btn btn-link" data-action="delete-data" {{^hasanswers}}hidden{{/hasanswers}}>
-                    {{#str}} deletemydata, block_aicourserecommender {{/str}}
+
+            <div class="alert alert-danger small mt-2" role="alert" tabindex="-1" data-region="form-error" hidden></div>
+
+            <div class="aicr-acceptance" data-region="acceptance" {{^showacceptance}}hidden{{/showacceptance}}>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="{{uniqid}}-accept" data-region="accept-checkbox">
+                    <label class="form-check-label" for="{{uniqid}}-accept">
+                        {{#str}} acceptconditions, block_aicourserecommender {{/str}}
+                    </label>
+                </div>
+                <button type="button" class="btn btn-link btn-sm p-0 aicr-conditions-link" data-action="show-conditions"
+                    aria-haspopup="dialog">
+                    {{#str}} readconditions, block_aicourserecommender {{/str}}
                 </button>
             </div>
+            <template data-region="conditions">
+                {{#showconsenttext}}
+                <div class="aicr-conditions-notice">{{{consenttext}}}</div>
+                <h4 class="h6 mt-3">{{#str}} aiusagepolicy, core_ai {{/str}}</h4>
+                {{/showconsenttext}}
+                <div class="aicr-conditions-policy">{{#str}} userpolicy, core_ai {{/str}}</div>
+            </template>
         </form>
-    </section>
+    </div>
+
+    <div data-region="summary" hidden>
+        <p class="aicr-summary-title">{{#str}} yourinterests, block_aicourserecommender {{/str}}</p>
+        <ul class="aicr-summary list-unstyled">
+            {{#questions}}
+            <li class="aicr-summary-item" data-region="summary-item" data-slot="{{slot}}">
+                <div class="aicr-summary-question small">{{{text}}}</div>
+                <div data-region="summary-view">
+                    <p class="aicr-summary-answer" data-region="summary-answer"
+                        data-empty="{{#str}} noanswer, block_aicourserecommender {{/str}}">{{#hasanswer}}{{answer}}{{/hasanswer}}{{^hasanswer}}{{#str}} noanswer, block_aicourserecommender {{/str}}{{/hasanswer}}</p>
+                    <button type="button" class="btn btn-link btn-sm p-0" data-action="edit-answer">
+                        {{#str}} edit {{/str}}<span class="aicr-sr"> {{#str}} questionnumber, block_aicourserecommender, {{number}} {{/str}}</span>
+                    </button>
+                </div>
+                <div data-region="summary-edit" hidden>
+                    <label for="{{uniqid}}-edit{{slot}}" class="aicr-sr">{{{text}}}</label>
+                    <textarea class="form-control" id="{{uniqid}}-edit{{slot}}" rows="3" maxlength="{{maxlength}}"
+                        data-region="summary-textarea"></textarea>
+                    <div class="aicr-answer-tools">
+                        {{> block_aicourserecommender/mic_button }}
+                        <span class="aicr-nav-spacer"></span>
+                        <button type="button" class="btn btn-link btn-sm" data-action="cancel-answer">
+                            {{#str}} cancel {{/str}}
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" data-action="save-answer">
+                            {{#str}} saveandupdate, block_aicourserecommender {{/str}}
+                        </button>
+                    </div>
+                </div>
+            </li>
+            {{/questions}}
+        </ul>
+        <div class="aicr-footer">
+            <button type="button" class="btn btn-link btn-sm p-0" data-action="back-to-results">
+                {{#str}} backtoresults, block_aicourserecommender {{/str}}
+            </button>
+            <button type="button" class="btn btn-link btn-sm p-0" data-action="delete-data">
+                {{#str}} deletemydata, block_aicourserecommender {{/str}}
+            </button>
+        </div>
+    </div>
 
     <div data-region="loading" aria-busy="true" {{^isloading}}hidden{{/isloading}}>
         <p class="small text-muted">{{#str}} loading, block_aicourserecommender {{/str}}</p>

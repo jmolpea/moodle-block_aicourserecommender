@@ -52,8 +52,11 @@ Feature: Learning paths
       | requireconsent | 0 | block_aicourserecommender |
     And I log in as "student1"
     And I visit "/index.php?redirect=0"
-    And I press "Accept and continue"
+    And I click on "I accept the conditions and I want personalised recommendations" "checkbox"
+    And I click on "Next" "button" in the "[data-region='question-card']:not([hidden])" "css_element"
     And I set the field with xpath "//textarea[@name='q2']" to "Lead a data team"
+    And I click on "Next" "button" in the "[data-region='question-card']:not([hidden])" "css_element"
+    And I click on "Skip" "button" in the "[data-region='question-card']:not([hidden])" "css_element"
     And I press "Get my recommendations"
     And I should see "Learning paths for you" in the "AI course recommender" "block"
     When I click on "View path" "link" in the "AI course recommender" "block"
