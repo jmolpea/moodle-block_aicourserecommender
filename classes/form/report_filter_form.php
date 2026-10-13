@@ -35,8 +35,8 @@ class report_filter_form extends \moodleform {
      */
     protected function definition() {
         $mform = $this->_form;
-        $mform->addElement('date_selector', 'from', get_string('from'));
-        $mform->addElement('date_selector', 'to', get_string('to'));
+        $mform->addElement('date_selector', 'from', get_string('report_from', 'block_aicourserecommender'));
+        $mform->addElement('date_selector', 'to', get_string('report_to', 'block_aicourserecommender'));
         $this->add_action_buttons(false, get_string('filter'));
     }
 

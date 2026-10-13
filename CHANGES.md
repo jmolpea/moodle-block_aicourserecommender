@@ -1,5 +1,13 @@
 # Changes
 
+## 1.0.0-beta4 (2026100600)
+
+- Moodle 5.3 support: the supported range is now Moodle 4.5 to 5.3. PHPUnit, Behat and the moodle-plugin-ci checks pass on Moodle 5.3 (PHP 8.3, PostgreSQL 17). No change to the plugin code was needed.
+- Fix (plugins directory review, issue #1): the report sets the page context and URL before it builds the date filter form, and the form labels use the plugin's own `report_from` and `report_to` strings instead of core strings that no longer exist. The report showed `[[from]]` and `[[to]]` as labels and raised three developer debugging messages. A PHPUnit test covers the form.
+- The path form and the questions setting no longer use Bootstrap 4 class names (a spacing class and the select box), which Moodle 5.x reports as deprecated; the select box takes the class of the Bootstrap version in use.
+- CI: Moodle 5.3 added to the matrix (PostgreSQL 17 and MySQL 8.4).
+- Tests declare `CoversClass` as a PHPUnit attribute as well as a doc-comment (PHPUnit 11 deprecates the doc-comment form).
+
 ## 1.0.0-beta3 (2026092901)
 
 - Same code as 1.0.0-beta2. New version number for the Moodle plugins directory submission.

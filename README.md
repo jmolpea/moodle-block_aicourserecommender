@@ -21,7 +21,7 @@ Free and open source (GPL v3 or later). Made by [Pluginia](https://pluginia.es).
 
 ## Requirements
 
-- Moodle **4.5** or later (tested on 4.5, 5.0, 5.1 and 5.2), PHP 8.1+ (as required by your Moodle version), MySQL/MariaDB or PostgreSQL.
+- Moodle **4.5** or later (tested on 4.5, 5.0, 5.1, 5.2 and 5.3), PHP 8.1+ (as required by your Moodle version), MySQL/MariaDB or PostgreSQL.
 - An **AI provider** configured in *Site administration > General > AI > AI providers* with the **Generate text** action enabled (for example OpenAI or Azure AI).
 - Optional: a provider with **Generate image** enabled, for learning path images.
 - The **Multi-language content** filter if you want multilang titles, questions and path descriptions.
@@ -119,7 +119,7 @@ Candidate courses are computed with one SQL query plus preloaded contexts. With 
 ## Development
 
 - Tests: PHPUnit (`vendor/bin/phpunit --testsuite block_aicourserecommender_testsuite`) and Behat (`--tags @block_aicourserecommender`). Tests never call a real provider: PHPUnit replaces the AI client through the DI container, and Behat uses a fake client that is only enabled on Behat test sites.
-- CI: GitHub Actions with moodle-plugin-ci on Moodle 4.5, 5.0, 5.1 and 5.2, PHP 8.1 to 8.4, PostgreSQL and MySQL.
+- CI: GitHub Actions with moodle-plugin-ci on Moodle 4.5, 5.0, 5.1, 5.2 and 5.3, PHP 8.1 to 8.4, PostgreSQL and MySQL.
 - Technical decisions: [docs/DECISIONS.md](docs/DECISIONS.md). Changes: [CHANGES.md](CHANGES.md).
 
 ## License

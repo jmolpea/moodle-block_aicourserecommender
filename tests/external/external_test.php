@@ -27,6 +27,16 @@ global $CFG;
 require_once($CFG->dirroot . '/blocks/aicourserecommender/tests/fixtures/fake_ai_client.php');
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\get_recommendations::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\get_more::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\save_answers::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\save_consent::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\submit_feedback::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\log_click::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\enrol_course::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\enrol_path::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\generate_path_description::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\generate_path_image::class)]
 /**
  * Tests of the external functions.
  *

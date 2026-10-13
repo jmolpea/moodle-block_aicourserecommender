@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/blocks/aicourserecommender/tests/fixtures/fake_ai_client.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\task\notify_new_courses::class)]
 /**
  * Tests of the daily task that ranks new courses and notifies learners.
  *

@@ -42,7 +42,12 @@ require_capability('block/aicourserecommender:viewreports', $context);
 $component = 'block_aicourserecommender';
 $title = get_string('report', $component);
 
-$form = new report_filter_form(new moodle_url('/blocks/aicourserecommender/report.php'));
+// The form needs the page context and URL to build its output.
+$baseurl = new moodle_url('/blocks/aicourserecommender/report.php');
+$PAGE->set_context($context);
+$PAGE->set_url($baseurl);
+
+$form = new report_filter_form($baseurl);
 if ($data = $form->get_data()) {
     $from = usergetmidnight($data->from);
     $to = usergetmidnight($data->to) + DAYSECS - 1;
@@ -50,8 +55,8 @@ if ($data = $form->get_data()) {
     $form->set_data(['from' => $from, 'to' => $to]);
 }
 
-$url = new moodle_url('/blocks/aicourserecommender/report.php', ['from' => $from, 'to' => $to]);
-$PAGE->set_context($context);
+// The page URL keeps the date range chosen in the form.
+$url = new moodle_url($baseurl, ['from' => $from, 'to' => $to]);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title($title);

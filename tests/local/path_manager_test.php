@@ -16,6 +16,8 @@
 
 namespace block_aicourserecommender\local;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\path_manager::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\enrolment_helper::class)]
 /**
  * Tests of learning paths and path enrolment.
  *

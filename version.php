@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_aicourserecommender';
-$plugin->version   = 2026092901;
+$plugin->version   = 2026100600;
 $plugin->requires  = 2024100700; // Moodle 4.5.0.
-$plugin->supported = [405, 502];
+$plugin->supported = [405, 503];
 $plugin->maturity  = MATURITY_BETA;
-$plugin->release   = '1.0.0-beta3';
+$plugin->release   = '1.0.0-beta4';

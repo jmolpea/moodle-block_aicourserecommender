@@ -21,9 +21,11 @@
 
     Context variables required for this template:
     * questions - slot, idprefix, nameprefix, text, help, enabled, orderoptions, hasdefault, defaulttext
+    * selectclass - Class of the select boxes, named after the Bootstrap version of the site
 
     Example context (json):
     {
+        "selectclass": "form-select",
         "questions": [{
             "slot": 1, "idprefix": "id_s_questions_1", "nameprefix": "s_questions[1]", "text": "", "help": "",
             "enabled": true, "hasdefault": true, "defaulttext": "What is your role?",
@@ -55,7 +57,7 @@
         </div>
         <div>
             <label for="{{idprefix}}_sortorder">{{#str}} order, block_aicourserecommender {{/str}}</label>
-            <select class="custom-select form-select w-auto" id="{{idprefix}}_sortorder" name="{{nameprefix}}[sortorder]">
+            <select class="{{selectclass}} d-inline-block w-auto" id="{{idprefix}}_sortorder" name="{{nameprefix}}[sortorder]">
                 {{#orderoptions}}
                 <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
                 {{/orderoptions}}

@@ -16,6 +16,7 @@
 
 namespace block_aicourserecommender\local;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\candidate_finder::class)]
 /**
  * Performance test of the candidate finder with a large catalogue.
  *

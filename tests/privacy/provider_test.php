@@ -25,6 +25,7 @@ use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 use core_privacy\tests\provider_testcase;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\privacy\provider::class)]
 /**
  * Tests of the privacy provider.
  *

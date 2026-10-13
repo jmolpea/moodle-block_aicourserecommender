@@ -16,6 +16,7 @@
 
 namespace block_aicourserecommender\local;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\response_parser::class)]
 /**
  * Tests of the validation of the AI answers.
  *

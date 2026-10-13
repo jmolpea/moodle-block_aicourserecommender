@@ -470,3 +470,9 @@
     font-weight: 600;
     margin-top: 1rem;
 }
+
+/* Space before the AI status text of the path form. Own rule, not a Bootstrap spacing utility:
+   their names differ between Bootstrap 4 (Moodle 4.5) and Bootstrap 5. */
+.aicr-ai-status {
+    margin-inline-start: 0.5rem;
+}

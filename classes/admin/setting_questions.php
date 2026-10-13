@@ -92,7 +92,7 @@ class setting_questions extends \admin_setting {
      * @return string
      */
     public function output_html($data, $query = '') {
-        global $OUTPUT;
+        global $CFG, $OUTPUT;
         $data = is_array($data) ? $data : questions::get_default_config();
         $default = $this->get_defaultsetting();
         $rows = [];
@@ -117,7 +117,11 @@ class setting_questions extends \admin_setting {
                     get_string('question' . $slot, 'block_aicourserecommender') : '',
             ];
         }
-        $element = $OUTPUT->render_from_template('block_aicourserecommender/setting_questions', ['questions' => $rows]);
+        $element = $OUTPUT->render_from_template('block_aicourserecommender/setting_questions', [
+            'questions' => $rows,
+            // Bootstrap 4 (Moodle 4.5) and Bootstrap 5 name the select box class differently.
+            'selectclass' => $CFG->branch >= 500 ? 'form-select' : 'custom-select',
+        ]);
         return format_admin_setting($this, $this->visiblename, $element, $this->description, false, '', null, $query);
     }
 }

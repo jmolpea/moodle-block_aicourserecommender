@@ -23,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/blocks/aicourserecommender/tests/fixtures/fake_ai_client.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\ranking_manager::class)]
 /**
  * Tests of the ranking: AI calls, validation, cache, daily limit and paging.
  *

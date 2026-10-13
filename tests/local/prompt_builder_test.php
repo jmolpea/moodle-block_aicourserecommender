@@ -16,6 +16,7 @@
 
 namespace block_aicourserecommender\local;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\prompt_builder::class)]
 /**
  * Tests of the prompt builder.
  *

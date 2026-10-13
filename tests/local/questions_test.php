@@ -18,6 +18,10 @@ namespace block_aicourserecommender\local;
 
 use block_aicourserecommender\admin\setting_questions;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\questions::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\answers_manager::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\profile_collector::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\admin\setting_questions::class)]
 /**
  * Tests of the questions, answers, consent and profile data.
  *

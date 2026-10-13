@@ -18,6 +18,14 @@ namespace block_aicourserecommender\event;
 
 use block_aicourserecommender\local\report;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\event\recommendations_viewed::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\event\recommendation_clicked::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\event\recommendation_rated::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\event\interests_updated::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\event\path_viewed::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\event\path_enrolled::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\event\course_enrolled_from_recommendation::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\report::class)]
 /**
  * Tests of the events and the report totals.
  *

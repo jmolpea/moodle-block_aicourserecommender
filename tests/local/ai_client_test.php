@@ -19,6 +19,7 @@ namespace block_aicourserecommender\local;
 use core_ai\aiactions\generate_text;
 use core_ai\aiactions\responses\response_generate_text;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\ai_client::class)]
 /**
  * Tests of the AI client with a mocked core AI manager.
  *

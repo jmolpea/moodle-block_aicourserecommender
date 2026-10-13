@@ -24,6 +24,10 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/blocks/aicourserecommender/tests/fixtures/fake_ai_client.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\summary_manager::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\course_data::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\observer::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\task\generate_summaries::class)]
 /**
  * Tests of course metadata, summaries, tasks and observers.
  *

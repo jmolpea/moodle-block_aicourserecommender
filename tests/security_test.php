@@ -37,6 +37,10 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/blocks/aicourserecommender/tests/fixtures/fake_ai_client.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\ranking_manager::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\local\profile_collector::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\external\helper::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\block_aicourserecommender\task\cleanup::class)]
 /**
  * Security, permission and privacy hardening tests.
  *
