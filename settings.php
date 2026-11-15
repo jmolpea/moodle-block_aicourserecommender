@@ -22,6 +22,7 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use block_aicourserecommender\admin\setting_int_range;
 use block_aicourserecommender\local\ai_client;
 use block_aicourserecommender\local\prompt_builder;
 
@@ -42,6 +43,17 @@ $settings = new admin_settingpage(
 );
 
 if ($ADMIN->fulltree) {
+    // Configuration manual.
+    $settings->add(new admin_setting_description(
+        'block_aicourserecommender/manuallink',
+        new lang_string('manuallink', $component),
+        html_writer::link(
+            \block_aicourserecommender\local\config::MANUAL_URL,
+            get_string('manuallink_desc', $component),
+            ['target' => '_blank', 'rel' => 'noopener']
+        )
+    ));
+
     // AI.
     $settings->add(new admin_setting_heading(
         'block_aicourserecommender/aiheading',
@@ -90,28 +102,28 @@ if ($ADMIN->fulltree) {
         HOURSECS
     ));
 
-    $settings->add(new admin_setting_configtext(
+    $settings->add(new setting_int_range(
         'block_aicourserecommender/dailylimit',
         new lang_string('dailylimit', $component),
         new lang_string('dailylimit_desc', $component),
         5,
-        PARAM_INT
+        1
     ));
 
-    $settings->add(new admin_setting_configtext(
+    $settings->add(new setting_int_range(
         'block_aicourserecommender/maxcoursesperprompt',
         new lang_string('maxcoursesperprompt', $component),
         new lang_string('maxcoursesperprompt_desc', $component),
         120,
-        PARAM_INT
+        1
     ));
 
-    $settings->add(new admin_setting_configtext(
+    $settings->add(new setting_int_range(
         'block_aicourserecommender/summariesperrun',
         new lang_string('summariesperrun', $component),
         new lang_string('summariesperrun_desc', $component),
         50,
-        PARAM_INT
+        0
     ));
 
     // Questions.
@@ -223,16 +235,18 @@ if ($ADMIN->fulltree) {
         new lang_string('settings_results', $component),
         ''
     ));
+    // Default, minimum and maximum (null for no upper limit) of each setting.
     foreach (
-        ['maxresults' => 4, 'maxranked' => 24, 'maxpathresults' => 2, 'maxpaths' => 6, 'notifythreshold' => 70,
-            'negativedays' => 90] as $name => $default
+        ['maxresults' => [4, 1, null], 'maxranked' => [24, 1, null], 'maxpathresults' => [2, 1, null],
+            'maxpaths' => [6, 1, null], 'notifythreshold' => [70, 0, 100], 'negativedays' => [90, 0, null]] as $name => $range
     ) {
-        $settings->add(new admin_setting_configtext(
+        $settings->add(new setting_int_range(
             'block_aicourserecommender/' . $name,
             new lang_string($name, $component),
             new lang_string($name . '_desc', $component),
-            $default,
-            PARAM_INT
+            $range[0],
+            $range[1],
+            $range[2]
         ));
     }
 
@@ -273,19 +287,19 @@ if ($ADMIN->fulltree) {
         new lang_string('notifyenabled_desc', $component),
         1
     ));
-    $settings->add(new admin_setting_configtext(
+    $settings->add(new setting_int_range(
         'block_aicourserecommender/notifyactivedays',
         new lang_string('notifyactivedays', $component),
         new lang_string('notifyactivedays_desc', $component),
         90,
-        PARAM_INT
+        1
     ));
-    $settings->add(new admin_setting_configtext(
+    $settings->add(new setting_int_range(
         'block_aicourserecommender/notifymaxusers',
         new lang_string('notifymaxusers', $component),
         new lang_string('notifymaxusers_desc', $component),
         200,
-        PARAM_INT
+        1
     ));
 
     // Privacy.
@@ -306,12 +320,12 @@ if ($ADMIN->fulltree) {
         new lang_string('consenttext_desc', $component, get_string('consenttextdefault', $component)),
         ''
     ));
-    $settings->add(new admin_setting_configtext(
+    $settings->add(new setting_int_range(
         'block_aicourserecommender/retentiondays',
         new lang_string('retentiondays', $component),
         new lang_string('retentiondays_desc', $component),
         365,
-        PARAM_INT
+        0
     ));
 }
 

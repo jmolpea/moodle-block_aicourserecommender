@@ -27,6 +27,9 @@ class config {
     /** @var string Plugin component. */
     public const COMPONENT = 'block_aicourserecommender';
 
+    /** @var string Address of the online configuration manual. */
+    public const MANUAL_URL = 'https://claude.ai/artifact/LCZgLbHfAnSBkurowGLZ95';
+
     /** @var array Default values of the integer settings. */
     public const INT_DEFAULTS = [
         'cachettl' => 86400,

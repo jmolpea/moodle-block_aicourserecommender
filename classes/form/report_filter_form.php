@@ -35,8 +35,9 @@ class report_filter_form extends \moodleform {
      */
     protected function definition() {
         $mform = $this->_form;
-        $mform->addElement('date_selector', 'from', get_string('report_from', 'block_aicourserecommender'));
-        $mform->addElement('date_selector', 'to', get_string('report_to', 'block_aicourserecommender'));
+        // The names differ from the 'from' and 'to' URL parameters of the report, which are timestamps.
+        $mform->addElement('date_selector', 'filterfrom', get_string('report_from', 'block_aicourserecommender'));
+        $mform->addElement('date_selector', 'filterto', get_string('report_to', 'block_aicourserecommender'));
         $this->add_action_buttons(false, get_string('filter'));
     }
 
@@ -49,8 +50,8 @@ class report_filter_form extends \moodleform {
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        if (!empty($data['from']) && !empty($data['to']) && $data['from'] > $data['to']) {
-            $errors['to'] = get_string('errordaterange', 'block_aicourserecommender');
+        if (!empty($data['filterfrom']) && !empty($data['filterto']) && $data['filterfrom'] > $data['filterto']) {
+            $errors['filterto'] = get_string('errordaterange', 'block_aicourserecommender');
         }
         return $errors;
     }

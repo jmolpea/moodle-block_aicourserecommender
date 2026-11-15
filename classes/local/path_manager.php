@@ -388,8 +388,14 @@ class path_manager {
             $reason = '';
             if (!$enrolled && !$direct) {
                 // Only the current user can be asked by enrol_self; other users get the generic reason.
-                $reason = $userid === (int) $USER->id ? $helper->get_unavailable_reason($course) : '';
-                $reason = $reason !== '' ? $reason : get_string('reason_noself', 'block_aicourserecommender');
+                if ($userid === (int) $USER->id) {
+                    $reason = $helper->get_unavailable_reason($course);
+                    // No reason means that self enrolment is open: the course is left out of direct enrolment by the
+                    // catalogue settings (category filter, exclusion field or enrolment methods).
+                    $reason = $reason !== '' ? $reason : get_string('reason_opencourse', 'block_aicourserecommender');
+                } else {
+                    $reason = get_string('reason_noself', 'block_aicourserecommender');
+                }
             }
             $result[] = [
                 'course' => $course,

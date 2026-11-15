@@ -42,6 +42,9 @@ final class report_filter_form_test extends \advanced_testcase {
         $this->assertStringNotContainsString('[[', $html);
         $this->assertStringContainsString(get_string('report_from', 'block_aicourserecommender'), $html);
         $this->assertStringContainsString(get_string('report_to', 'block_aicourserecommender'), $html);
+        // The date selectors are submitted as arrays: they must not use the names of the 'from' and 'to' URL parameters.
+        $this->assertStringNotContainsString('name="from[', $html);
+        $this->assertStringNotContainsString('name="to[', $html);
     }
 
     public function test_validation_rejects_inverted_range(): void {
@@ -49,7 +52,7 @@ final class report_filter_form_test extends \advanced_testcase {
         $form = new report_filter_form();
         $now = time();
 
-        $this->assertArrayHasKey('to', $form->validation(['from' => $now, 'to' => $now - DAYSECS], []));
-        $this->assertSame([], $form->validation(['from' => $now - DAYSECS, 'to' => $now], []));
+        $this->assertArrayHasKey('filterto', $form->validation(['filterfrom' => $now, 'filterto' => $now - DAYSECS], []));
+        $this->assertSame([], $form->validation(['filterfrom' => $now - DAYSECS, 'filterto' => $now], []));
     }
 }

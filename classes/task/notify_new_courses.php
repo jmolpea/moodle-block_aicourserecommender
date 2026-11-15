@@ -36,6 +36,9 @@ class notify_new_courses extends \core\task\scheduled_task {
     /** @var int Maximum notifications per learner and run. */
     public const MAX_NOTIFICATIONS = 3;
 
+    /** @var bool Whether the last request to the AI was rejected by the provider rate limit. */
+    protected bool $ratelimited = false;
+
     /**
      * Task name.
      *
@@ -56,9 +59,15 @@ class notify_new_courses extends \core\task\scheduled_task {
             return;
         }
         $processed = 0;
+        $this->ratelimited = false;
         foreach ($this->get_users() as $user) {
             $this->process_user($user);
             $processed++;
+            // The provider would reject the next learners too: they wait for the next run.
+            if ($this->ratelimited) {
+                mtrace('The AI provider rate limit was reached. The remaining learners will be checked in the next runs.');
+                break;
+            }
         }
         mtrace("Learners processed: {$processed}.");
     }
@@ -113,8 +122,13 @@ class notify_new_courses extends \core\task\scheduled_task {
                 return;
             }
             $manager = new ranking_manager();
+            $failed = ['userid' => $userid, 'calltype' => ai_client::CALL_INCREMENTAL, 'success' => 0];
+            $failedbefore = $DB->count_records(ai_client::LOG_TABLE, $failed);
             $ranked = $manager->rank_new_courses($userid, $newids);
             if (!$ranked) {
+                // Only a request made right now for this learner tells that the provider limit was reached.
+                $this->ratelimited = $DB->count_records(ai_client::LOG_TABLE, $failed) > $failedbefore
+                    && \core\di::get(ai_client::class)->is_rate_limited();
                 return;
             }
             mtrace("Learner {$userid}: " . count($ranked) . ' new course(s) ranked.');

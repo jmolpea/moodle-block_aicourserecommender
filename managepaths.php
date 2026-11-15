@@ -109,5 +109,6 @@ echo $OUTPUT->render_from_template('block_aicourserecommender/managepaths', [
     'canreport' => has_capability('block/aicourserecommender:viewreports', $context),
     'settingsurl' => (new moodle_url('/admin/settings.php', ['section' => 'blocksettingaicourserecommender']))->out(false),
     'cansettings' => has_capability('moodle/site:config', $context),
+    'manualurl' => \block_aicourserecommender\local\config::MANUAL_URL,
 ]);
 echo $OUTPUT->footer();

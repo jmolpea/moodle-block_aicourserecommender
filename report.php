@@ -49,10 +49,10 @@ $PAGE->set_url($baseurl);
 
 $form = new report_filter_form($baseurl);
 if ($data = $form->get_data()) {
-    $from = usergetmidnight($data->from);
-    $to = usergetmidnight($data->to) + DAYSECS - 1;
+    $from = usergetmidnight($data->filterfrom);
+    $to = usergetmidnight($data->filterto) + DAYSECS - 1;
 } else {
-    $form->set_data(['from' => $from, 'to' => $to]);
+    $form->set_data(['filterfrom' => $from, 'filterto' => $to]);
 }
 
 // The page URL keeps the date range chosen in the form.

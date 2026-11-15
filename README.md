@@ -38,13 +38,15 @@ The plugin does not store any API key and does not call any external service dir
 
 *Site administration > Plugins > Blocks > AI course recommender > Settings*
 
+A step-by-step configuration manual (in Spanish) is linked at the top of the settings page and in *Manage learning paths*: <https://claude.ai/artifact/LCZgLbHfAnSBkurowGLZ95>. Numeric settings are validated: most need 1 or more (0 is only accepted where it has a meaning, such as retention days).
+
 1. **Artificial intelligence**: check the provider status. Optionally write the *institution prompt* (see below). Adjust the cache lifetime (24 h), the daily limit per learner (5) and the maximum courses per request (120).
 2. **Questions**: keep the four default questions (translated automatically) or write your own. Leave a text empty to use the default. Up to six questions; at least one active.
 3. **Profile data**: choose the standard fields sent to the AI (city, country, institution, department, interests, description) and any custom profile field. Names, email, username, id number, phone, address, IP and ids are never sent.
 4. **Catalogue**: optional category filter, enrolment methods that make a course a candidate (self by default), and a course custom field of type checkbox that means "Do not recommend".
 5. **Results**: courses shown (4), courses ranked (24), paths shown (2), paths ranked (6), notification threshold (70) and days a thumbs-down item stays hidden (90).
 6. **Learning paths**: enable or disable path recommendations, set the corporate **image style** (colours, illustration style, mood) used by "Generate image with AI", and open *Manage learning paths*.
-7. **Notifications**: new-course notifications, learner activity window (90 days) and learners per run (200).
+7. **Notifications**: new-course notifications, learner activity window (90 days) and learners per run (200). Turning notifications off does not stop the daily task from ranking new courses; disable the scheduled task *Rank new courses and notify learners* to avoid those AI requests.
 8. **Privacy**: require consent (on by default) and the notice text.
 
 Then add the block: turn editing on in the front page (in Moodle 5.2+ the site home is only available to logged-in users when *Enable site home* is on; otherwise use the Dashboard) or in *Site administration > Appearance > Default Dashboard page*, add *AI course recommender*, and reset the Dashboard for all users if needed. Learners can also add it to their own Dashboard.

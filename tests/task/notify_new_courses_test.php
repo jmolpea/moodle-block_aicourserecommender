@@ -101,4 +101,30 @@ final class notify_new_courses_test extends \advanced_testcase {
         (new notify_new_courses())->execute();
         $this->assertCount(0, $sink->get_messages());
     }
+
+    public function test_stops_at_the_provider_rate_limit(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $ai = new fake_ai_client();
+        \core\di::set(ai_client::class, $ai);
+        $generator = $this->getDataGenerator()->get_plugin_generator('block_aicourserecommender');
+        $generator->create_candidate_course();
+        foreach ([1, 2] as $unused) {
+            $user = $this->getDataGenerator()->create_user(['lastaccess' => time()]);
+            \core_ai\manager::user_policy_accepted((int) $user->id, \context_system::instance()->id);
+            $generator->create_answers((int) $user->id);
+            $this->setUser($user);
+            (new ranking_manager())->get_recommendations((int) $user->id);
+        }
+        $this->setAdminUser();
+        $DB->set_field(ranking_manager::TABLE, 'timemodified', time() - DAYSECS, []);
+
+        $generator->create_candidate_course();
+        $ai->responses[] = fake_ai_client::RATE_LIMITED;
+        $this->expectOutputRegex('/rate limit was reached.*Learners processed: 1/s');
+        (new notify_new_courses())->execute();
+
+        // The second learner is not sent to the provider in this run.
+        $this->assertSame(1, $DB->count_records(ai_client::LOG_TABLE, ['calltype' => ai_client::CALL_INCREMENTAL]));
+    }
 }

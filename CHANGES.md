@@ -1,5 +1,15 @@
 # Changes
 
+## 1.0.0-beta5 (2026111500)
+
+- Fix: filtering the report by dates failed. The date selectors of the filter had the same names (`from`, `to`) as the URL parameters of the report, so the page received arrays where it expected timestamps (a coding exception on current Moodle versions). The form fields are now `filterfrom` and `filterto`; links with `from` and `to` keep working.
+- Fix: on the page of a learning path, a course with open self enrolment that is left out by the catalogue settings (category filter, exclusion field or enrolment methods) said "This course does not allow self enrolment". It now says that the learner cannot be enrolled from the recommender and should open the course.
+- The numeric settings only accept values that make sense. Requests per learner and day, maximum courses per request, courses and paths shown and ranked, learner activity days and learners per run need 1 or more; the notification threshold accepts 0 to 100; summaries per run, hidden days and retention days accept 0 or more. Before, 0 in "AI requests per user and day" blocked every new ranking without any warning. Values already stored are not changed: an out-of-range value is reported the next time the settings page is saved.
+- The daily new-courses task stops when the AI provider rate limit is reached and continues in the next run, instead of sending the remaining learners to a provider that rejects them.
+- The description of "Notify new courses" now says that, when it is off, the daily task still ranks new courses (AI requests) and that the scheduled task must be disabled to avoid them. No change in behaviour.
+- New link to the online configuration manual in the settings page and in "Manage learning paths".
+- New strings: `errorintmin`, `errorintrange`, `manuallink`, `manuallink_desc`, `reason_opencourse` (English, Spanish and Portuguese).
+
 ## 1.0.0-beta4 (2026100600)
 
 - Moodle 5.3 support: the supported range is now Moodle 4.5 to 5.3. PHPUnit, Behat and the moodle-plugin-ci checks pass on Moodle 5.3 (PHP 8.3, PostgreSQL 17). No change to the plugin code was needed.

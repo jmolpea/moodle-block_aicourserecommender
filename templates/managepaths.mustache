@@ -22,12 +22,13 @@
     Context variables required for this template:
     * paths - Paths with urls
     * haspaths - Whether there are paths
-    * addurl, reporturl, canreport, settingsurl, cansettings
+    * addurl, reporturl, canreport, settingsurl, cansettings, manualurl
 
     Example context (json):
     {
         "haspaths": true, "addurl": "https://example.com/add", "reporturl": "https://example.com/report",
         "canreport": true, "settingsurl": "https://example.com/settings", "cansettings": true,
+        "manualurl": "https://example.com/manual",
         "paths": [{
             "id": 1, "name": "Leadership", "visible": true, "coursecount": 3, "viewurl": "https://example.com/v",
             "editurl": "https://example.com/e", "hideurl": "https://example.com/h", "showurl": "https://example.com/s",
@@ -40,6 +41,7 @@
         <a href="{{addurl}}" class="btn btn-primary">{{#str}} addpath, block_aicourserecommender {{/str}}</a>
         {{#canreport}}<a href="{{reporturl}}" class="btn btn-secondary">{{#str}} report, block_aicourserecommender {{/str}}</a>{{/canreport}}
         {{#cansettings}}<a href="{{settingsurl}}" class="btn btn-secondary">{{#str}} settings, block_aicourserecommender {{/str}}</a>{{/cansettings}}
+        <a href="{{manualurl}}" class="btn btn-link" target="_blank" rel="noopener">{{#str}} manuallink, block_aicourserecommender {{/str}}</a>
     </div>
     {{#haspaths}}
     <table class="table generaltable aicr-paths-table">

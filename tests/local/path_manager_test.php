@@ -148,6 +148,28 @@ final class path_manager_test extends \advanced_testcase {
             'itemtype' => 'path', 'itemid' => $path->id]));
     }
 
+    public function test_reason_of_open_course_outside_the_catalogue(): void {
+        $user = $this->getDataGenerator()->create_user();
+        $allowed = $this->getDataGenerator()->create_category();
+        $course = $this->plugingenerator->create_candidate_course();
+        $this->setAdminUser();
+        $path = $this->plugingenerator->create_path(['courses' => [$course->id]]);
+
+        $this->setUser($user);
+        $progress = path_manager::get_progress((int) $path->id, (int) $user->id);
+        $this->assertSame('available', $progress[0]['status']);
+        $this->assertTrue($progress[0]['directenrol']);
+        $this->assertSame('', $progress[0]['reason']);
+
+        // The category filter leaves the course out: self enrolment is still open, so the reason must not deny it.
+        set_config('categoryfilter', 1, 'block_aicourserecommender');
+        set_config('categories', $allowed->id, 'block_aicourserecommender');
+        $progress = path_manager::get_progress((int) $path->id, (int) $user->id);
+        $this->assertSame('unavailable', $progress[0]['status']);
+        $this->assertFalse($progress[0]['directenrol']);
+        $this->assertSame(get_string('reason_opencourse', 'block_aicourserecommender'), $progress[0]['reason']);
+    }
+
     public function test_enrol_course_only_direct_self(): void {
         $user = $this->getDataGenerator()->create_user();
         $direct = $this->plugingenerator->create_candidate_course();
